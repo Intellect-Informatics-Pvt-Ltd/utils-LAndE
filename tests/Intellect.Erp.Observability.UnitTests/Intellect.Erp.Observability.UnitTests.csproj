@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Intellect.Erp.Observability.UnitTests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Core\Intellect.Erp.Observability.Core.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.AspNetCore\Intellect.Erp.Observability.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Propagation\Intellect.Erp.Observability.Propagation.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.AuditHooks\Intellect.Erp.Observability.AuditHooks.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Log4NetBridge\Intellect.Erp.Observability.Log4NetBridge.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Testing\Intellect.Erp.Observability.Testing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Testing\elk-canonical-fields-v1.golden.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="FsCheck" />
+    <PackageReference Include="FsCheck.Xunit" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+</Project>

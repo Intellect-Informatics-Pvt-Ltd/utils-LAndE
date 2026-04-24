@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>SampleHost</RootNamespace>
+    <Description>Minimal ASP.NET Core host demonstrating one-line adoption of the Observability platform.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.AspNetCore\Intellect.Erp.Observability.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.ErrorHandling\Intellect.Erp.ErrorHandling.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.AuditHooks\Intellect.Erp.Observability.AuditHooks.csproj" />
+  </ItemGroup>
+
+</Project>

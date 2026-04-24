@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Intellect.Erp.Observability.Log4NetBridge</RootNamespace>
+    <Description>SerilogForwardingAppender that routes legacy log4net output into the Serilog pipeline.</Description>
+    <!-- Suppress known moderate vulnerability in log4net 3.1.0 (GHSA-4f7c-pmjv-c25w) — required for legacy bridge -->
+    <NoWarn>$(NoWarn);NU1902</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Intellect.Erp.Observability.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Intellect.Erp.Observability.Abstractions\Intellect.Erp.Observability.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" />
+    <PackageReference Include="Serilog" />
+  </ItemGroup>
+
+</Project>

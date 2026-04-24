@@ -1,0 +1,63 @@
+errors:
+  - code: "ERP-LOANS-VAL-0001"
+    title: "Invalid loan amount"
+    userMessage: "Loan amount must be greater than zero."
+    supportMessage: "Client submitted a loan disbursement request with amount <= 0."
+    httpStatus: 400
+    severity: "Warning"
+    retryable: false
+    category: "Validation"
+
+  - code: "ERP-LOANS-VAL-0002"
+    title: "Missing required field"
+    userMessage: "One or more required fields are missing from the loan application."
+    supportMessage: "Loan application payload failed required-field validation."
+    httpStatus: 400
+    severity: "Warning"
+    retryable: false
+    category: "Validation"
+
+  - code: "ERP-LOANS-NFD-0001"
+    title: "Loan not found"
+    userMessage: "The requested loan could not be found."
+    supportMessage: "Loan lookup by ID returned no results — verify the loan ID."
+    httpStatus: 404
+    severity: "Warning"
+    retryable: false
+    category: "NotFound"
+
+  - code: "ERP-LOANS-NFD-0002"
+    title: "Member not found"
+    userMessage: "The specified member could not be found."
+    supportMessage: "Member lookup during loan processing returned no results."
+    httpStatus: 404
+    severity: "Warning"
+    retryable: false
+    category: "NotFound"
+
+  - code: "ERP-LOANS-BIZ-0001"
+    title: "Loan limit exceeded"
+    userMessage: "The loan amount exceeds the maximum disbursement limit."
+    supportMessage: "Loan amount exceeded the configured maximum for the member's tier."
+    httpStatus: 422
+    severity: "Warning"
+    retryable: false
+    category: "Business"
+
+  - code: "ERP-LOANS-BIZ-0002"
+    title: "Member not eligible"
+    userMessage: "The member is not eligible for a new loan at this time."
+    supportMessage: "Member eligibility check failed — review blacklist status and outstanding loans."
+    httpStatus: 422
+    severity: "Warning"
+    retryable: false
+    category: "Business"
+
+  - code: "ERP-LOANS-CFL-0001"
+    title: "Loan already approved"
+    userMessage: "This loan has already been approved and cannot be approved again."
+    supportMessage: "Duplicate approval attempt detected — loan is already in Approved state."
+    httpStatus: 409
+    severity: "Warning"
+    retryable: false
+    category: "Conflict"

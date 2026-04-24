@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>Intellect.Erp.Observability.IntegrationTests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.AspNetCore\Intellect.Erp.Observability.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Propagation\Intellect.Erp.Observability.Propagation.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Testing\Intellect.Erp.Observability.Testing.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Integrations.Traceability\Intellect.Erp.Observability.Integrations.Traceability.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Integrations.Messaging\Intellect.Erp.Observability.Integrations.Messaging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="FsCheck" />
+    <PackageReference Include="FsCheck.Xunit" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+{
+  "description": "ELK Canonical Field Set v1",
+  "version": "v1",
+  "fields": [
+    "@timestamp",
+    "level",
+    "app",
+    "env",
+    "machine",
+    "module",
+    "correlationId",
+    "log.schema"
+  ]
+}

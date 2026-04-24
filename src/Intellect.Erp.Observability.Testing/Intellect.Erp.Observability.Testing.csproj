@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Intellect.Erp.Observability.Testing</RootNamespace>
+    <Description>Testing harness with fakes, in-memory sinks, and assertion helpers for the Observability platform.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Intellect.Erp.Observability.Abstractions\Intellect.Erp.Observability.Abstractions.csproj" />
+    <ProjectReference Include="..\Intellect.Erp.ErrorHandling\Intellect.Erp.ErrorHandling.csproj" />
+    <ProjectReference Include="..\Intellect.Erp.Observability.Core\Intellect.Erp.Observability.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+</Project>
