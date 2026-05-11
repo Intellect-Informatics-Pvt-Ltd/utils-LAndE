@@ -12,19 +12,7 @@ PACK_ALL="${PACK_ALL:-false}"
 NUGET_API_KEY="${NUGET_API_KEY:-${GITHUB_TOKEN:-}}"
 
 log() {
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
     printf '%s\n' "$*" >&2
-=======
-    printf '%s\n' "$*"
->>>>>>> theirs
-=======
-    printf '%s\n' "$*"
->>>>>>> theirs
-=======
-    printf '%s\n' "$*"
->>>>>>> theirs
 }
 
 die() {
@@ -115,18 +103,6 @@ project_for_file() {
 projects_to_pack() {
     local file_path
     local project_path
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-=======
-    local projects=()
->>>>>>> theirs
-=======
-    local projects=()
->>>>>>> theirs
-=======
-    local projects=()
->>>>>>> theirs
 
     while IFS= read -r file_path; do
         [ -z "$file_path" ] && continue
@@ -139,35 +115,11 @@ projects_to_pack() {
 
         project_path="$(project_for_file "$file_path")"
         if [ -n "$project_path" ]; then
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
             log "Source package change detected ($file_path); packing all src projects."
             all_package_projects
             return 0
         fi
     done < <(changed_files)
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-            projects+=("$project_path")
-        fi
-    done < <(changed_files)
-
-    if [ "${#projects[@]}" -eq 0 ]; then
-        return 0
-    fi
-
-    printf '%s\n' "${projects[@]}" | sort -u
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 }
 
 read_package_id() {
@@ -187,7 +139,7 @@ get_latest_version() {
     local package_id="$1"
 
     if [ -z "${GITHUB_TOKEN:-}" ]; then
-        log "No GITHUB_TOKEN available; using initial version for $package_id." >&2
+        log "No GITHUB_TOKEN available; using initial version for $package_id."
         return 0
     fi
 
@@ -217,7 +169,7 @@ get_latest_version() {
             printf '%s\n' "$latest_version"
             ;;
         404)
-            log "No existing package found for $package_id; using initial version." >&2
+            log "No existing package found for $package_id; using initial version."
             ;;
         *)
             die "GitHub package lookup failed for $package_id with HTTP $http_status: $response_body"
@@ -238,33 +190,12 @@ increment_version() {
     fi
 }
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
 next_release_version() {
-=======
-next_version_for_package() {
-    local package_id="$1"
-
->>>>>>> theirs
-=======
-next_version_for_package() {
-    local package_id="$1"
-
->>>>>>> theirs
-=======
-next_version_for_package() {
-    local package_id="$1"
-
->>>>>>> theirs
     if [ -n "$NEW_VERSION" ]; then
         printf '%s\n' "$NEW_VERSION"
         return 0
     fi
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
     local project_path
     local package_id
     local latest_version
@@ -287,18 +218,6 @@ next_version_for_package() {
         | grep -E '^[0-9]+[.][0-9]+[.][0-9]+' \
         | sort -V \
         | tail -n 1 || true)"
-=======
-    local latest_version
-    latest_version="$(get_latest_version "$package_id")"
->>>>>>> theirs
-=======
-    local latest_version
-    latest_version="$(get_latest_version "$package_id")"
->>>>>>> theirs
-=======
-    local latest_version
-    latest_version="$(get_latest_version "$package_id")"
->>>>>>> theirs
 
     if [ -n "$latest_version" ]; then
         increment_version "$latest_version"
@@ -340,19 +259,10 @@ push_package() {
 main() {
     local selected_projects=()
     local project_path
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
     local package_id
     local package_version
     local release_version
     local nupkg_file
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
 
     while IFS= read -r project_path; do
         [ -z "$project_path" ] && continue
@@ -367,18 +277,9 @@ main() {
     log "Projects selected for packaging:"
     printf '  - %s\n' "${selected_projects[@]}"
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
     release_version="$(next_release_version "${selected_projects[@]}")"
     log "Using package version $release_version for this release."
 
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
     rm -rf "$PACKAGE_OUTPUT_DIR"
     mkdir -p "$PACKAGE_OUTPUT_DIR"
 
@@ -387,24 +288,9 @@ main() {
 
     for project_path in "${selected_projects[@]}"; do
         package_id="$(read_package_id "$project_path")"
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
         package_version="$release_version"
         pack_project "$project_path" "$package_id" "$package_version"
         nupkg_file="$PACKAGE_OUTPUT_DIR/${package_id}.${package_version}.nupkg"
-=======
-        package_version="$(next_version_for_package "$package_id")"
-        nupkg_file="$(pack_project "$project_path" "$package_id" "$package_version")"
->>>>>>> theirs
-=======
-        package_version="$(next_version_for_package "$package_id")"
-        nupkg_file="$(pack_project "$project_path" "$package_id" "$package_version")"
->>>>>>> theirs
-=======
-        package_version="$(next_version_for_package "$package_id")"
-        nupkg_file="$(pack_project "$project_path" "$package_id" "$package_version")"
->>>>>>> theirs
 
         if [ "$PUSH_PACKAGES" = "true" ]; then
             push_package "$nupkg_file"

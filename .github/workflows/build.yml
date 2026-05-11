@@ -5,23 +5,30 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      GITHUB_OWNER: ${{ github.repository_owner }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_PACKAGES_PAT: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Perform a full clone
 
     - name: Set up .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x' # Adjust the version as per your project's requirement
 
-    - name: Grant execute permission for the script
-      run: chmod +x ./build_push_script.sh
-
     - name: Run build script
-      run: ./build_push_script.sh
+      shell: bash
+      run: bash ./build_push_script.sh
