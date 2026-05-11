@@ -1,0 +1,27 @@
+name: Build and Push NuGet Packages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Perform a full clone
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x' # Adjust the version as per your project's requirement
+
+    - name: Grant execute permission for the script
+      run: chmod +x ./build_push_script.sh
+
+    - name: Run build script
+      run: ./build_push_script.sh
