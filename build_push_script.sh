@@ -8,7 +8,7 @@ CONFIGURATION="${CONFIGURATION:-Release}"
 INITIAL_VERSION="${INITIAL_VERSION:-1.0.0}"
 NEW_VERSION="${NEW_VERSION:-}"
 PUSH_PACKAGES="${PUSH_PACKAGES:-true}"
-PACK_ALL="${PACK_ALL:-false}"
+PACK_ALL="${PACK_ALL:-true}"
 NUGET_API_KEY="${NUGET_API_KEY:-${GITHUB_TOKEN:-}}"
 
 log() {
@@ -103,6 +103,12 @@ project_for_file() {
 projects_to_pack() {
     local file_path
     local project_path
+
+    if [ "$PACK_ALL" = "true" ]; then
+        log "PACK_ALL=true; packing all src projects."
+        all_package_projects
+        return 0
+    fi
 
     while IFS= read -r file_path; do
         [ -z "$file_path" ] && continue

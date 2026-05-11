@@ -34,8 +34,8 @@ jobs:
       GITHUB_OWNER: ${{ github.repository_owner }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_PACKAGES_PAT: ${{ secrets.GITHUB_TOKEN }}
-      PACK_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.pack_all == true && 'true' || 'false' }}
-      PUSH_PACKAGES: ${{ github.event_name == 'workflow_dispatch' && inputs.push_packages == true && 'true' || github.event_name == 'workflow_dispatch' && 'false' || 'true' }}
+      PACK_ALL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pack_all || 'true' }}
+      PUSH_PACKAGES: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.push_packages || 'true' }}
       NEW_VERSION: ${{ github.event.inputs.version || '' }}
 
     steps:
