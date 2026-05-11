@@ -74,7 +74,7 @@ changed_files() {
 
 is_repo_wide_build_input() {
     case "$1" in
-        *.sln|Directory.Build.props|Directory.Packages.props|NuGet.Config|global.json)
+        *.sln|Directory.Build.props|Directory.Packages.props|NuGet.Config|global.json|build_push_script.sh|.github/workflows/*)
             return 0
             ;;
         *)

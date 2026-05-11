@@ -4,6 +4,23 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      pack_all:
+        description: Pack every src project for verification.
+        required: true
+        type: boolean
+        default: true
+      push_packages:
+        description: Publish generated packages to GitHub Packages.
+        required: true
+        type: boolean
+        default: false
+      version:
+        description: Optional package version override, for example 1.0.0-preview.1.
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -17,6 +34,9 @@ jobs:
       GITHUB_OWNER: ${{ github.repository_owner }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_PACKAGES_PAT: ${{ secrets.GITHUB_TOKEN }}
+      PACK_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.pack_all == true && 'true' || 'false' }}
+      PUSH_PACKAGES: ${{ github.event_name == 'workflow_dispatch' && inputs.push_packages == true && 'true' || github.event_name == 'workflow_dispatch' && 'false' || 'true' }}
+      NEW_VERSION: ${{ github.event.inputs.version || '' }}
 
     steps:
     - name: Checkout repository
@@ -32,3 +52,10 @@ jobs:
     - name: Run build script
       shell: bash
       run: bash ./build_push_script.sh
+
+    - name: Upload NuGet packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: artifacts/nuget/*.nupkg
+        if-no-files-found: warn
