@@ -3,6 +3,21 @@
   <!-- Central Package Management: all NuGet versions pinned here -->
   <!-- See: https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management -->
 
+  <ItemGroup Label="Intellect.Erp internal packages (consumed by Intellect.Erp.AllObservabilityAndTraceabilitys)">
+    <!-- Floating versions: the meta-package always picks up whatever was just
+         published by build_push_script.sh in the same workflow run. -->
+    <PackageVersion Include="Intellect.Erp.ErrorHandling" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.Abstractions" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.AspNetCore" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.AuditHooks" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.Core" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.Integrations.Messaging" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.Integrations.Traceability" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.Log4NetBridge" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.Propagation" Version="*" />
+    <PackageVersion Include="Intellect.Erp.Observability.Testing" Version="*" />
+  </ItemGroup>
+
   <ItemGroup Label="Microsoft.Extensions.*">
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.1" />

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Intellect.Erp.AllObservabilityAndTraceabilitys</RootNamespace>
+    <Description>Meta-package that bundles all Intellect.Erp observability, error-handling, and traceability libraries as NuGet dependencies.</Description>
+    <!-- Marker consumed by build_push_script.sh: meta-packages are restored/packed
+         AFTER all leaf packages have been published in the same run, so that
+         their PackageReferences can always be resolved from the feed. -->
+    <IsMetaPackage>true</IsMetaPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Intellect.Erp.ErrorHandling" />
+    <PackageReference Include="Intellect.Erp.Observability.Abstractions" />
+    <PackageReference Include="Intellect.Erp.Observability.AspNetCore" />
+    <PackageReference Include="Intellect.Erp.Observability.AuditHooks" />
+    <PackageReference Include="Intellect.Erp.Observability.Core" />
+    <PackageReference Include="Intellect.Erp.Observability.Integrations.Messaging" />
+    <PackageReference Include="Intellect.Erp.Observability.Integrations.Traceability" />
+    <PackageReference Include="Intellect.Erp.Observability.Log4NetBridge" />
+    <PackageReference Include="Intellect.Erp.Observability.Propagation" />
+    <PackageReference Include="Intellect.Erp.Observability.Testing" />
+  </ItemGroup>
+
+</Project>
