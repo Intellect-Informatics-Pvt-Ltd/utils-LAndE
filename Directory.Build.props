@@ -8,6 +8,10 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Allows the Intellect.Erp.AllObservabilityAndTraceabilitys meta-package
+         to consume its internal NuGet refs via floating versions defined in
+         Directory.Packages.props. Required to satisfy NU1011. -->
+    <CentralPackageFloatingVersionsEnabled>true</CentralPackageFloatingVersionsEnabled>
   </PropertyGroup>
 
   <!-- PublicAPI analyzer support for tracking public API surface -->
