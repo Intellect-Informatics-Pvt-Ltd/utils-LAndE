@@ -33,7 +33,14 @@ jobs:
     env:
       GITHUB_OWNER: ${{ github.repository_owner }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_PACKAGES_PAT: ${{ secrets.GITHUB_TOKEN }}
+      # NUGET_PACKAGES_PAT is a repo secret (Settings -> Secrets and
+      # variables -> Actions) containing a PAT with read:packages and
+      # write:packages scopes, SSO-authorised for the org. It is required
+      # because the per-run secrets.GITHUB_TOKEN cannot read org-level
+      # NuGet packages unless each package is explicitly linked to this
+      # repository. If the secret is not configured, falls back to
+      # GITHUB_TOKEN (works only for packages linked to this repo).
+      GITHUB_PACKAGES_PAT: ${{ secrets.NUGET_PACKAGES_PAT || secrets.GITHUB_TOKEN }}
       PACK_ALL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pack_all || 'true' }}
       PUSH_PACKAGES: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.push_packages || 'true' }}
       NEW_VERSION: ${{ github.event.inputs.version || '' }}
