@@ -295,6 +295,7 @@ push_package() {
 
 main() {
     local selected_projects=()
+    local nupkg_files=()
     local project_path
     local package_id
     local package_version
@@ -328,9 +329,11 @@ main() {
     for project_path in "${selected_projects[@]}"; do
         package_id="$(read_package_id "$project_path")"
         package_version="$release_version"
-        pack_project "$project_path" "$package_id" "$package_version"
-        nupkg_file="$PACKAGE_OUTPUT_DIR/${package_id}.${package_version}.nupkg"
+        nupkg_file="$(pack_project "$project_path" "$package_id" "$package_version")"
+        nupkg_files+=("$nupkg_file")
+    done
 
+    for nupkg_file in "${nupkg_files[@]}"; do
         if [ "$PUSH_PACKAGES" = "true" ]; then
             push_package "$nupkg_file"
         else

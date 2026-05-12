@@ -17,7 +17,7 @@ public sealed class FakeAppLogger<T> : IAppLogger<T>
     /// <summary>
     /// Gets all captured log entries.
     /// </summary>
-    public IReadOnlyList<LogEntry> Entries => _entries.ToArray().Reverse().ToList();
+    public IReadOnlyList<LogEntry> Entries => Enumerable.Reverse(_entries.ToArray()).ToList();
 
     /// <inheritdoc />
     public void Debug(string messageTemplate, params object[] args)
