@@ -172,6 +172,12 @@ read_package_id() {
     fi
 }
 
+is_meta_project() {
+    local csproj_file="$1"
+
+    grep -Eq '<IsMetaPackage>[[:space:]]*true[[:space:]]*</IsMetaPackage>' "$csproj_file"
+}
+
 get_latest_version() {
     local package_id="$1"
 
@@ -295,6 +301,8 @@ push_package() {
 
 main() {
     local selected_projects=()
+    local leaf_projects=()
+    local meta_projects=()
     local nupkg_files=()
     local project_path
     local package_id
@@ -315,6 +323,14 @@ main() {
     log "Projects selected for packaging:"
     printf '  - %s\n' "${selected_projects[@]}"
 
+    for project_path in "${selected_projects[@]}"; do
+        if is_meta_project "$project_path"; then
+            meta_projects+=("$project_path")
+        else
+            leaf_projects+=("$project_path")
+        fi
+    done
+
     release_version="$(next_release_version "${selected_projects[@]}")"
     log "Using package version $release_version for this release."
 
@@ -323,10 +339,25 @@ main() {
 
     configure_github_packages_source
 
-    log "Restoring solution..."
-    dotnet restore Intellect.Erp.Observability.sln
+    log "Restoring non-meta package projects..."
+    for project_path in "${leaf_projects[@]}"; do
+        dotnet restore "$project_path"
+    done
 
-    for project_path in "${selected_projects[@]}"; do
+    for project_path in "${leaf_projects[@]}"; do
+        package_id="$(read_package_id "$project_path")"
+        package_version="$release_version"
+        pack_project "$project_path" "$package_id" "$package_version"
+        nupkg_file="$PACKAGE_OUTPUT_DIR/${package_id}.${package_version}.nupkg"
+        nupkg_files+=("$nupkg_file")
+    done
+
+    log "Restoring meta-package projects against local artifacts..."
+    for project_path in "${meta_projects[@]}"; do
+        dotnet restore "$project_path" -p:RestoreAdditionalProjectSources="$PACKAGE_OUTPUT_DIR"
+    done
+
+    for project_path in "${meta_projects[@]}"; do
         package_id="$(read_package_id "$project_path")"
         package_version="$release_version"
         pack_project "$project_path" "$package_id" "$package_version"
