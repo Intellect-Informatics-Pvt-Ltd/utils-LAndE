@@ -3,13 +3,16 @@ set -Eeuo pipefail
 
 GITHUB_OWNER="${GITHUB_OWNER:-${ORG:-Intellect-Informatics-Pvt-Ltd}}"
 NUGET_SOURCE="${NUGET_SOURCE:-https://nuget.pkg.github.com/${GITHUB_OWNER}/index.json}"
+GITHUB_PACKAGES_USERNAME="${GITHUB_PACKAGES_USERNAME:-${GITHUB_ACTOR:-}}"
+GITHUB_PACKAGES_PAT="${GITHUB_PACKAGES_PAT:-}"
 PACKAGE_OUTPUT_DIR="${PACKAGE_OUTPUT_DIR:-artifacts/nuget}"
 CONFIGURATION="${CONFIGURATION:-Release}"
 INITIAL_VERSION="${INITIAL_VERSION:-1.0.0}"
 NEW_VERSION="${NEW_VERSION:-}"
 PUSH_PACKAGES="${PUSH_PACKAGES:-true}"
 PACK_ALL="${PACK_ALL:-true}"
-NUGET_API_KEY="${NUGET_API_KEY:-${GITHUB_TOKEN:-}}"
+NUGET_API_KEY="${NUGET_API_KEY:-${GITHUB_PACKAGES_PAT:-${GITHUB_TOKEN:-}}}"
+PACKAGE_QUERY_TOKEN="${GITHUB_PACKAGES_PAT:-${GITHUB_TOKEN:-}}"
 
 log() {
     printf '%s\n' "$*" >&2
@@ -29,8 +32,36 @@ for command_name in git dotnet curl jq sort; do
 done
 
 if [ "$PUSH_PACKAGES" = "true" ] && [ -z "$NUGET_API_KEY" ]; then
-    die "Set GITHUB_TOKEN or NUGET_API_KEY before publishing packages."
+    die "Set GITHUB_PACKAGES_PAT, GITHUB_TOKEN, or NUGET_API_KEY before publishing packages."
 fi
+
+configure_github_packages_source() {
+    local token="${GITHUB_PACKAGES_PAT:-${GITHUB_TOKEN:-}}"
+
+    if [ -z "$token" ]; then
+        log "No GitHub Packages token available; leaving NuGet source credentials unchanged."
+        return 0
+    fi
+
+    if [ -z "$GITHUB_PACKAGES_USERNAME" ]; then
+        die "Set GITHUB_PACKAGES_USERNAME or GITHUB_ACTOR before restoring GitHub Packages."
+    fi
+
+    log "Configuring GitHub Packages NuGet source for $GITHUB_PACKAGES_USERNAME."
+    if dotnet nuget list source | grep -Eq '^[[:space:]]*[0-9]+[.)][[:space:]]+github[[:space:]]'; then
+        dotnet nuget update source github \
+            --source "$NUGET_SOURCE" \
+            --username "$GITHUB_PACKAGES_USERNAME" \
+            --password "$token" \
+            --store-password-in-clear-text >/dev/null
+    else
+        dotnet nuget add source "$NUGET_SOURCE" \
+            --name github \
+            --username "$GITHUB_PACKAGES_USERNAME" \
+            --password "$token" \
+            --store-password-in-clear-text >/dev/null
+    fi
+}
 
 resolve_base_ref() {
     if [ -n "${BASE_REF:-}" ]; then
@@ -144,8 +175,8 @@ read_package_id() {
 get_latest_version() {
     local package_id="$1"
 
-    if [ -z "${GITHUB_TOKEN:-}" ]; then
-        log "No GITHUB_TOKEN available; using initial version for $package_id."
+    if [ -z "$PACKAGE_QUERY_TOKEN" ]; then
+        log "No GitHub Packages query token available; using initial version for $package_id."
         return 0
     fi
 
@@ -155,7 +186,7 @@ get_latest_version() {
     local response
     if ! response="$(curl -sS \
         -w '\n%{http_code}' \
-        -H "Authorization: Bearer $GITHUB_TOKEN" \
+        -H "Authorization: Bearer $PACKAGE_QUERY_TOKEN" \
         -H "Accept: application/vnd.github+json" \
         "https://api.github.com/orgs/${GITHUB_OWNER}/packages/nuget/${encoded_package_id}/versions?per_page=100")"; then
         die "Failed to query GitHub Packages for $package_id."
@@ -288,6 +319,8 @@ main() {
 
     rm -rf "$PACKAGE_OUTPUT_DIR"
     mkdir -p "$PACKAGE_OUTPUT_DIR"
+
+    configure_github_packages_source
 
     log "Restoring solution..."
     dotnet restore Intellect.Erp.Observability.sln
