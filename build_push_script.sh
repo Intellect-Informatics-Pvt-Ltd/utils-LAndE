@@ -279,8 +279,6 @@ pack_project() {
 
     local nupkg_file="$PACKAGE_OUTPUT_DIR/${package_id}.${package_version}.nupkg"
     [ -f "$nupkg_file" ] || die "Expected package was not generated: $nupkg_file"
-
-    printf '%s\n' "$nupkg_file"
 }
 
 push_package() {
@@ -329,7 +327,8 @@ main() {
     for project_path in "${selected_projects[@]}"; do
         package_id="$(read_package_id "$project_path")"
         package_version="$release_version"
-        nupkg_file="$(pack_project "$project_path" "$package_id" "$package_version")"
+        pack_project "$project_path" "$package_id" "$package_version"
+        nupkg_file="$PACKAGE_OUTPUT_DIR/${package_id}.${package_version}.nupkg"
         nupkg_files+=("$nupkg_file")
     done
 
