@@ -285,10 +285,12 @@ push_package() {
     local nupkg_file="$1"
 
     log "Pushing $nupkg_file to $NUGET_SOURCE..."
-    dotnet nuget push "$nupkg_file" \
+    if ! dotnet nuget push "$nupkg_file" \
         --api-key "$NUGET_API_KEY" \
         --source "$NUGET_SOURCE" \
-        --skip-duplicate
+        --skip-duplicate; then
+        die "Failed to push $nupkg_file. If GitHub Packages returned 403 Forbidden, grant the token user write/admin access to that package, link the package to this repository, or delete the existing package if it was created under different permissions."
+    fi
 }
 
 main() {
