@@ -153,7 +153,9 @@ public sealed class FakeAppLogger<T> : IAppLogger<T>
     /// </summary>
     public void Clear()
     {
+#pragma warning disable S108
         while (_entries.TryTake(out _)) { }
+#pragma warning restore S108
     }
 
     // ── Private helpers ────────────────────────────────────────────

@@ -47,7 +47,12 @@
 
   <ItemGroup Label="Serialization and configuration">
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="ASP.NET Core">
+    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="Legacy logging bridge">

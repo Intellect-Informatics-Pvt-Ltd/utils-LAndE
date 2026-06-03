@@ -5,7 +5,9 @@ namespace Intellect.Erp.Observability.Abstractions;
 /// and provides business-context-aware logging methods including scoped operations and checkpoints.
 /// </summary>
 /// <typeparam name="T">The type whose name is used for the logger category.</typeparam>
+#pragma warning disable S2326
 public interface IAppLogger<T>
+#pragma warning restore S2326
 {
     /// <summary>
     /// Writes a Debug-level log entry.
