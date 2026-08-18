@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `064b58d docs: refresh generated README` |
+| HEAD | `62bf8d1 docs: refresh generated README — add measured change log with register/customization id index` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
