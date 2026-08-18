@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `a196b49 docs: generated module README` |
+| HEAD | `064b58d docs: refresh generated README` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -22,6 +22,100 @@
 - **`r2-dev-tn`** — level with `r2-dev-stable`, nothing outstanding.
 
 Every state branch is level with stable, so **there is no state-specific code in this repo right now**.
+
+## Change log — measured from git, newest first
+
+Every entry below is read from this repo's own commits: **what** changed (the subject), **why** (the commit body's own first paragraph), **which files**, and the register / state-customization **ids** it carries. When a maintenance question arrives as a TD-xx or a state id (KA/AS/TN/WBxxxx), the index maps it straight to the commits, and each commit to its files.
+
+### Commits
+
+**`a196b49`** 2026-08-18 — docs: generated module README
+
+> Written by build/generate-module-readmes.py in the platform repo. Every number is measured at generation time - tables from this repo's own db/**.sql, endpoints from its controllers, test projects from its csproj files, and the state delta from git log r2-dev-stable..r2-dev-XX here.
+
+Files: `README.md`
+
+**`7d45e08`** 2026-08-07 — Standardize NuGet package workflow and authentication
+
+Files: `.github/workflows/build.yml`, `NuGet.Config`, `build_push_script.sh`
+
+**`2d86bdc`** 2026-06-03 — changes for  creating RequestResposeLogging
+
+Files: `Directory.Packages.props`, `Intellect.Erp.Observability.sln`, `NuGet.Config`, `src/Intellect.Erp.Observability.Abstractions/IAppLogger.cs`, `src/Intellect.Erp.Observability.Testing/FakeAppLogger.cs`, `src/Intellect.Erp.RequestResponseLogging/Constants/LoggingConstants.cs`, `src/Intellect.Erp.RequestResponseLogging/Exceptions/RequestBodyTooLargeException.cs`, `src/Intellect.Erp.RequestResponseLogging/Extensions/ApplicationBuilderExtensions.cs`, `src/Intellect.Erp.RequestResponseLogging/Extensions/ServiceCollectionExtensions.cs`, `src/Intellect.Erp.RequestResponseLogging/Helpers/EnvironmentValidator.cs` — and 13 more
+
+**`c56168a`** 2026-05-12 — update package
+
+Files: `NuGet.Config`, `build_push_script.sh`
+
+**`8d845dd`** 2026-05-12 — update configs
+
+Files: `build_push_script.sh`
+
+**`7ff5540`** 2026-05-12 — update configs
+
+Files: `build_push_script.sh`
+
+**`d248ac2`** 2026-05-12 — update configs
+
+Files: `build_push_script.sh`, `src/Intellect.Erp.Observability.Testing/FakeAppLogger.cs`
+
+**`5b65481`** 2026-05-12 — update configs
+
+Files: `.github/workflows/build.yml`, `NuGet.Config`, `build_push_script.sh`
+
+**`1875c70`** 2026-05-12 — Changes for updating the NuGet Package Credentials
+
+Files: `NuGet.Config`
+
+**`2be4e88`** 2026-05-12 — Changes for build Issue
+
+Files: `.github/workflows/build.yml`, `Intellect.Erp.Observability.sln`, `NuGet.Config`
+
+**`f31e6e7`** 2026-05-12 — Changes for consolidating the packages
+
+Files: `Directory.Build.props`, `Directory.Packages.props`, `Intellect.Erp.Observability.sln`, `NuGet.Config`, `samples/SampleHost/Properties/launchSettings.json`, `src/Intellect.Erp.AllObservabilityAndTraceabilitys/Intellect.Erp.AllObservabilityAndTraceabilitys.csproj`
+
+**`b911149`** 2026-05-11 — Revert "Changes for Making Single NuGet Package for all  Observability And Traceability's"
+
+> This reverts commit 4c5a08575461affcd44a9db0032b9f15e2fdbf2a.
+
+Files: `AllObservabilityAndTraceabilitys/Intellect.Erp.AllObservabilityAndTraceabilitys.csproj`, `Directory.Packages.props`, `NuGet.Config`
+
+**`4c5a085`** 2026-05-11 — Changes for Making Single NuGet Package for all  Observability And Traceability's
+
+Files: `AllObservabilityAndTraceabilitys/Intellect.Erp.AllObservabilityAndTraceabilitys.csproj`, `Directory.Packages.props`, `NuGet.Config`
+
+**`7ddebe5`** 2026-05-11 — update workflow
+
+Files: `.github/workflows/build.yml`, `build_push_script.sh`
+
+**`aac189f`** 2026-05-11 — remove file conflict for script
+
+Files: `.github/workflows/build.yml`, `build_push_script.sh`
+
+**`4622424`** 2026-05-11 — remove file conflict for script
+
+Files: `.github/workflows/build.yml`, `build_push_script.sh`
+
+**`6002b06`** 2026-05-11 — add script for nuget upload
+
+Files: `build_push_script.sh`
+
+**`ae80d38`** 2026-05-11 — created the build.yml under .github/workflows
+
+Files: `.github/workflows/build.yml`
+
+**`d331ee4`** 2026-04-24 — Dev Guide PDF
+
+Files: `docs/Developer_User_Guide.pdf`
+
+**`93851ae`** 2026-04-24 — Observability - Logging and Error Handling
+
+Files: `.gitignore`, `.kiro/specs/utils-lande-observability/.config.kiro`, `.kiro/specs/utils-lande-observability/design.md`, `.kiro/specs/utils-lande-observability/requirements.md`, `.kiro/specs/utils-lande-observability/tasks.md`, `Directory.Build.props`, `Directory.Packages.props`, `Intellect.Erp.Observability.sln`, `NuGet.Config`, `README.md` — and 177 more
+
+**`b5a93b6`** 2026-04-23 — Initial commit
+
+Files: `.gitignore`, `README.md`
 
 ## How to run it
 
