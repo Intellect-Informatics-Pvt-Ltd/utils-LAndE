@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `62bf8d1 docs: refresh generated README — add measured change log with register/customization id index` |
+| HEAD | `21f840c docs: refresh generated README` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -17,9 +17,9 @@
 
 `r2-dev-stable` is the single integration branch: **every state's code merges onto it and nowhere else**, and one codebase serves all 30 states. A state branch exists only while that state's work is in flight.
 
-- **`r2-dev-as`** — level with `r2-dev-stable`, nothing outstanding.
-- **`r2-dev-ka`** — level with `r2-dev-stable`, nothing outstanding.
-- **`r2-dev-tn`** — level with `r2-dev-stable`, nothing outstanding.
+- **`r2-dev-as`** — carries no work of its own beyond `r2-dev-stable`.
+- **`r2-dev-ka`** — carries no work of its own beyond `r2-dev-stable`.
+- **`r2-dev-tn`** — carries no work of its own beyond `r2-dev-stable`.
 
 Every state branch is level with stable, so **there is no state-specific code in this repo right now**.
 
