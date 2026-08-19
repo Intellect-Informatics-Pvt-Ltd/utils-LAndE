@@ -1,0 +1,84 @@
+# TD-125: this repo had no test workflow at all -- build.yml only packs and publishes
+# NuGet packages, so its test suite had never run in CI.
+#
+# Trigger note (TD-39): r2-dev-stable is the branch development actually happens on, so it
+# is included here. This workflow only restores/builds/tests and publishes nothing. The
+# NuGet publish lives in build.yml, which stays pinned to master on purpose -- do NOT add
+# r2-dev-stable or pull_request there, because its script forces PUSH_PACKAGES=true for
+# any event that is not workflow_dispatch.
+name: Tests
+
+on:
+  push:
+    branches: [main, master, develop, r2-dev-stable, 'feature/**']
+  pull_request:
+    branches: [main, master, develop, r2-dev-stable]
+
+jobs:
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore Intellect.Erp.Observability.sln
+
+      - name: Build
+        run: dotnet build Intellect.Erp.Observability.sln --no-restore --configuration Release
+
+      - name: Test (unit)
+        run: >-
+          dotnet test Intellect.Erp.Observability.sln
+          --no-build --configuration Release
+          --verbosity normal
+          --filter "FullyQualifiedName!~Integration"
+          --logger "trx;LogFileName=unit-test-results.trx"
+          --results-directory "${{ github.workspace }}/TestResults/unit"
+
+      - name: Upload unit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: TestResults/unit
+
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    needs: unit
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore Intellect.Erp.Observability.sln
+
+      - name: Build
+        run: dotnet build Intellect.Erp.Observability.sln --no-restore --configuration Release
+
+      # These need a Docker daemon (Testcontainers) or a live MySQL; ubuntu-latest
+      # provides Docker. Kept in a separate job so an infrastructure failure here
+      # cannot be mistaken for a unit-test regression.
+
+      - name: Test (integration -- requires Docker)
+        run: >-
+          dotnet test tests/Intellect.Erp.Observability.IntegrationTests/Intellect.Erp.Observability.IntegrationTests.csproj
+          --no-build --configuration Release
+          --verbosity normal
+          --logger "trx;LogFileName=integration-test-results.trx"
+          --results-directory "${{ github.workspace }}/TestResults/integration"
+
+      - name: Upload integration results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: TestResults/integration
