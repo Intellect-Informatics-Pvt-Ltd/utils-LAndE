@@ -33,16 +33,29 @@ jobs:
       # (NuGet.Config -> source "github"), so a bare `dotnet restore` returns
       # 401 Unauthorized. Mirrors configure_github_packages_source() in
       # build_push_script.sh: prefer the org PAT, fall back to the job's token.
+      #
+      # Tolerant on purpose: a repo with no NuGet.Config, or one without a
+      # "github" source, skips instead of failing the job. If the feed really was
+      # needed, restore says so with a 401 - which is the honest error.
       - name: Authenticate GitHub Packages feed
         env:
           FEED_TOKEN: ${{ secrets.GITHUB_PACKAGES_PAT || github.token }}
-        run: >-
-          dotnet nuget update source github
-          --configfile NuGet.Config
-          --source https://nuget.pkg.github.com/Intellect-Informatics-Pvt-Ltd/index.json
-          --username ${{ github.actor }}
-          --password "$FEED_TOKEN"
-          --store-password-in-clear-text
+        run: |
+          set -euo pipefail
+          if [ ! -f NuGet.Config ]; then
+            echo "::notice::no root NuGet.Config - nothing to authenticate"
+            exit 0
+          fi
+          if ! grep -q 'key="github"' NuGet.Config; then
+            echo "::notice::no 'github' package source - skipping authentication"
+            exit 0
+          fi
+          dotnet nuget update source github \
+            --configfile NuGet.Config \
+            --source https://nuget.pkg.github.com/Intellect-Informatics-Pvt-Ltd/index.json \
+            --username "${{ github.actor }}" \
+            --password "$FEED_TOKEN" \
+            --store-password-in-clear-text
 
       - name: Restore
         run: dotnet restore Intellect.Erp.Observability.sln
@@ -81,16 +94,29 @@ jobs:
       # (NuGet.Config -> source "github"), so a bare `dotnet restore` returns
       # 401 Unauthorized. Mirrors configure_github_packages_source() in
       # build_push_script.sh: prefer the org PAT, fall back to the job's token.
+      #
+      # Tolerant on purpose: a repo with no NuGet.Config, or one without a
+      # "github" source, skips instead of failing the job. If the feed really was
+      # needed, restore says so with a 401 - which is the honest error.
       - name: Authenticate GitHub Packages feed
         env:
           FEED_TOKEN: ${{ secrets.GITHUB_PACKAGES_PAT || github.token }}
-        run: >-
-          dotnet nuget update source github
-          --configfile NuGet.Config
-          --source https://nuget.pkg.github.com/Intellect-Informatics-Pvt-Ltd/index.json
-          --username ${{ github.actor }}
-          --password "$FEED_TOKEN"
-          --store-password-in-clear-text
+        run: |
+          set -euo pipefail
+          if [ ! -f NuGet.Config ]; then
+            echo "::notice::no root NuGet.Config - nothing to authenticate"
+            exit 0
+          fi
+          if ! grep -q 'key="github"' NuGet.Config; then
+            echo "::notice::no 'github' package source - skipping authentication"
+            exit 0
+          fi
+          dotnet nuget update source github \
+            --configfile NuGet.Config \
+            --source https://nuget.pkg.github.com/Intellect-Informatics-Pvt-Ltd/index.json \
+            --username "${{ github.actor }}" \
+            --password "$FEED_TOKEN" \
+            --store-password-in-clear-text
 
       - name: Restore
         run: dotnet restore Intellect.Erp.Observability.sln
