@@ -14,6 +14,10 @@ on:
   pull_request:
     branches: [main, master, develop, r2-dev-stable]
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   unit:
     name: Unit tests
@@ -24,6 +28,21 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      # The Intellect.* packages come from the org's PRIVATE GitHub Packages feed
+      # (NuGet.Config -> source "github"), so a bare `dotnet restore` returns
+      # 401 Unauthorized. Mirrors configure_github_packages_source() in
+      # build_push_script.sh: prefer the org PAT, fall back to the job's token.
+      - name: Authenticate GitHub Packages feed
+        env:
+          FEED_TOKEN: ${{ secrets.GITHUB_PACKAGES_PAT || github.token }}
+        run: >-
+          dotnet nuget update source github
+          --configfile NuGet.Config
+          --source https://nuget.pkg.github.com/Intellect-Informatics-Pvt-Ltd/index.json
+          --username ${{ github.actor }}
+          --password "$FEED_TOKEN"
+          --store-password-in-clear-text
 
       - name: Restore
         run: dotnet restore Intellect.Erp.Observability.sln
@@ -57,6 +76,21 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      # The Intellect.* packages come from the org's PRIVATE GitHub Packages feed
+      # (NuGet.Config -> source "github"), so a bare `dotnet restore` returns
+      # 401 Unauthorized. Mirrors configure_github_packages_source() in
+      # build_push_script.sh: prefer the org PAT, fall back to the job's token.
+      - name: Authenticate GitHub Packages feed
+        env:
+          FEED_TOKEN: ${{ secrets.GITHUB_PACKAGES_PAT || github.token }}
+        run: >-
+          dotnet nuget update source github
+          --configfile NuGet.Config
+          --source https://nuget.pkg.github.com/Intellect-Informatics-Pvt-Ltd/index.json
+          --username ${{ github.actor }}
+          --password "$FEED_TOKEN"
+          --store-password-in-clear-text
 
       - name: Restore
         run: dotnet restore Intellect.Erp.Observability.sln
