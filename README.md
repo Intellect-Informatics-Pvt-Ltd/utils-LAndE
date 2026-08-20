@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `21f840c docs: refresh generated README` |
+| HEAD | `24fb92e ci: park test workflows on manual trigger until feed auth is proven (TD-127)` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -23,11 +23,56 @@
 
 Every state branch is level with stable, so **there is no state-specific code in this repo right now**.
 
+## Design documents
+
+Hand-written design records in `docs/` — the WHY behind the changes the change log
+below only dates. Read these before modifying the subsystems they cover.
+
+- [Intellect.Erp.Observability — Developer User Guide](docs/Developer_User_Guide.md)
+- [Intellect.Erp.Traceability — Developer User Guide](docs/Traceability_Developer_User_Guide.md)
+- [Adoption Guide](docs/adoption-guide.md)
+- [utils-LAndE — One-page adoption quick reference](docs/adoption-quickref.md)
+- [ELK Field Reference — Canonical Field Set (Schema v1)](docs/elk-field-reference.md)
+- [Error Catalog Authoring Guide](docs/error-catalog-authoring.md)
+- [Migration from log4net to Serilog](docs/migration-from-log4net.md)
+
 ## Change log — measured from git, newest first
 
 Every entry below is read from this repo's own commits: **what** changed (the subject), **why** (the commit body's own first paragraph), **which files**, and the register / state-customization **ids** it carries. When a maintenance question arrives as a TD-xx or a state id (KA/AS/TN/WBxxxx), the index maps it straight to the commits, and each commit to its files.
 
+### Register & customization id index
+
+| Id | Commits |
+|---|---|
+| **TD-39** | `3ff4c5b` |
+| **TD-125** | `3ff4c5b` |
+| **TD-127** | `24fb92e` |
+
 ### Commits
+
+**`24fb92e`** 2026-08-19 — ci: park test workflows on manual trigger until feed auth is proven (TD-127) · **TD-127**
+
+> The suites were switched on estate-wide and then failed at restore with 401 against the private GitHub Packages feed. Auth was added and hardened, but it could not be confirmed working from this side - the Actions logs are not readable here - so three blind fixes in a row is where this stops.
+
+Files: `.github/workflows/tests.yml`
+
+**`88a072a`** 2026-08-19 — fix(ci): make feed authentication tolerant so it cannot fail the job
+
+> A repo with no root NuGet.Config (l3_SHG) or one without a 'github' source made 'dotnet nuget update source' error and took the whole job down. Both are now a skip-with-notice. If the private feed really was needed, restore still reports the honest 401 rather than a confusing failure in the auth step.
+
+Files: `.github/workflows/tests.yml`
+
+**`66d146d`** 2026-08-19 — fix(ci): authenticate the private GitHub Packages feed before restore
+
+> Every tests.yml did a bare 'dotnet restore', which returns 401 Unauthorized: the Intellect.* packages live on the org's PRIVATE GitHub Packages feed (NuGet.Config -> source 'github') and credentials are deliberately not committed. build.yml already handled this via configure_github_packages_source() in build_push_script.sh; the test workflows never did, so they failed at restore before running one test.
+
+Files: `.github/workflows/tests.yml`
+
+**`3ff4c5b`** 2026-08-19 — ci(TD-125): add publish-free tests.yml running on r2-dev-stable · **TD-125** **TD-39**
+
+> This repo had no test workflow: build.yml only packs and publishes NuGet packages, so its suite had never run in CI. Cloned from the estate reference (l3_DMS/.github/workflows/tests.yml) - restore, build, test, upload .trx.
+
+Files: `.github/workflows/tests.yml`
 
 **`a196b49`** 2026-08-18 — docs: generated module README
 
