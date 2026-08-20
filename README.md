@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `93ccd8d docs: FAS voucher-integrity section + state-appendix convention in the generated README` |
+| HEAD | `0b61785 TD-39 closed: publish on the ref, not on "was not a workflow_dispatch"` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -44,12 +44,18 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 
 | Id | Commits |
 |---|---|
-| **TD-39** | `3ff4c5b` |
+| **TD-39** | `0b61785`, `3ff4c5b` |
 | **TD-125** | `3ff4c5b` |
-| **TD-127** | `24fb92e` |
+| **TD-127** | `0b61785`, `24fb92e` |
 | **TD-134** | `93ccd8d` |
 
 ### Commits
+
+**`0b61785`** 2026-08-21 — TD-39 closed: publish on the ref, not on "was not a workflow_dispatch" · **TD-127** **TD-39**
+
+> build.yml set PUSH_PACKAGES=true for every event that was not a workflow_dispatch. That is safe only while `on: push:` lists master alone - so adding r2-dev-stable or pull_request to the trigger block, which is the one change everyone wants, would have published a NuGet package on every dev push. The register recorded that as "do not widen this", which left the trap in place rather than removing it.
+
+Files: `.github/workflows/build.yml`
 
 **`93ccd8d`** 2026-08-20 — docs: FAS voucher-integrity section + state-appendix convention in the generated README · **TD-134**
 
