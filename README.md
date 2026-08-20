@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `44f7870 docs: refresh generated README` |
+| HEAD | `53b95b3 docs: refresh generated README` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -183,6 +183,14 @@ It **refuses a non-empty schema** by design. Verify by counting, not by exit cod
 ```bash
 mysql -u root -p -N -e "SELECT COUNT(*) FROM information_schema.tables \
   WHERE table_schema='<db>' AND table_type='BASE TABLE';"
+```
+
+## State READMEs — append, never fork
+
+This file is generated ON `r2-dev-stable` and flows to every state branch through the sync merges, so state branches keep the full base context and history. A state branch that needs its own notes APPENDS a section **below this line** — never edits the generated body above — so the note survives regeneration and merges back cleanly when the state's work lands on stable:
+
+```markdown
+<!-- STATE APPENDIX (r2-dev-XX) — keep everything state-specific below this marker -->
 ```
 
 ---
