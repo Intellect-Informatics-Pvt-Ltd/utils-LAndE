@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `24fb92e ci: park test workflows on manual trigger until feed auth is proven (TD-127)` |
+| HEAD | `6459d19 docs: refresh generated README` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
