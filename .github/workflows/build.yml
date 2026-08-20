@@ -110,7 +110,22 @@ jobs:
             export NEW_VERSION="${DISPATCH_VERSION:-}"
           else
             export PACK_ALL="true"
-            export PUSH_PACKAGES="true"
+            # TD-39: publish because of the REF, not because the event merely
+            # was not a workflow_dispatch. The old test was `anything that is
+            # not a dispatch publishes`, which is only safe while `on: push:`
+            # lists master alone - so adding r2-dev-stable or pull_request to
+            # the trigger block above (which is what everyone wants) would have
+            # published a package on every dev push. This is behaviour-
+            # preserving today and makes that widening safe to do.
+            case "$GITHUB_REF" in
+              refs/heads/master|refs/heads/main|refs/tags/v*)
+                export PUSH_PACKAGES="true"
+                ;;
+              *)
+                export PUSH_PACKAGES="false"
+                echo "::notice::$GITHUB_REF is not a release ref - packing for verification, not publishing"
+                ;;
+            esac
             export NEW_VERSION=""
           fi
 
