@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `53b95b3 docs: refresh generated README` |
+| HEAD | `93ccd8d docs: FAS voucher-integrity section + state-appendix convention in the generated README` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -47,8 +47,15 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-39** | `3ff4c5b` |
 | **TD-125** | `3ff4c5b` |
 | **TD-127** | `24fb92e` |
+| **TD-134** | `93ccd8d` |
 
 ### Commits
+
+**`93ccd8d`** 2026-08-20 — docs: FAS voucher-integrity section + state-appendix convention in the generated README · **TD-134**
+
+> Every FAS-connected module's README now carries the voucher-integrity fixes (TD-134/135/139, pre-posting correction), the governing switches with defaults and implications, and the reconciliation flow - Dev/DevOps read it in the module they work in, not only in l3_FAS. Connection is MEASURED (git grep for the FAS/VoucherProcessing surface), never curated. State branches append below the STATE APPENDIX marker, never edit the generated body, so context and history survive the merge back onto r2-dev-stable.
+
+Files: `README.md`
 
 **`24fb92e`** 2026-08-19 — ci: park test workflows on manual trigger until feed auth is proven (TD-127) · **TD-127**
 
