@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `560cd67 Close TD-155 and TD-156 - and both were wrong about their own severity` |
+| HEAD | `9bdfeab docs: refresh generated READMEs after the MH Phase 0/1 work` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
