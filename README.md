@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `43de68d docs: refresh generated README (baseline 1,150/44; PACS analytics + universal search shipped in l3_BDP)` |
+| HEAD | `7c006cf docs: refresh generated README (baseline 1,151/44; PACS analytics UI + phases 2/4)` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
