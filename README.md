@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `f2cf8b1 Converge on one MySQL driver, and drop a query that could never run` |
+| HEAD | `560cd67 Close TD-155 and TD-156 - and both were wrong about their own severity` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -52,10 +52,18 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-138** | `b6e087f` |
 | **TD-153** | `f2cf8b1` |
 | **TD-154** | `f2cf8b1` |
-| **TD-155** | `f2cf8b1` |
-| **TD-156** | `f2cf8b1` |
+| **TD-155** | `560cd67`, `f2cf8b1` |
+| **TD-156** | `560cd67`, `f2cf8b1` |
+| **TD-157** | `560cd67` |
+| **TD-158** | `560cd67` |
 
 ### Commits
+
+**`560cd67`** 2026-08-21 — Close TD-155 and TD-156 - and both were wrong about their own severity · **TD-155** **TD-156** **TD-157** **TD-158**
+
+> TD-155 named three advisories. Auditing all 33 repos found SEVENTEEN vulnerable package versions, one of them CRITICAL. Ten are now fixed, and the seven that remain are not fixable by a version bump, so they are recorded individually rather than left as a warning nobody reads.
+
+Files: `README.md`
 
 **`f2cf8b1`** 2026-08-21 — Converge on one MySQL driver, and drop a query that could never run · **TD-153** **TD-154** **TD-155** **TD-156** **TD-39**
 
