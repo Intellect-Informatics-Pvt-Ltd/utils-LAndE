@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `7c006cf docs: refresh generated README (baseline 1,151/44; PACS analytics UI + phases 2/4)` |
+| HEAD | `6f926ee docs: refresh generated README (analytics snapshot scheduler)` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
