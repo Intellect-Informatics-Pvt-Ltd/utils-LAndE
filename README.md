@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `0b61785 TD-39 closed: publish on the ref, not on "was not a workflow_dispatch"` |
+| HEAD | `b6e087f docs: regenerate module READMEs with the TD-136 / TD-138 findings` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -44,44 +44,52 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 
 | Id | Commits |
 |---|---|
-| **TD-39** | `0b61785`, `3ff4c5b` |
-| **TD-125** | `3ff4c5b` |
-| **TD-127** | `0b61785`, `24fb92e` |
-| **TD-134** | `93ccd8d` |
+| **TD-39** | `48280f0`, `32c2aa1` |
+| **TD-125** | `32c2aa1` |
+| **TD-127** | `48280f0`, `318184e` |
+| **TD-134** | `94d2e36` |
+| **TD-136** | `b6e087f` |
+| **TD-138** | `b6e087f` |
 
 ### Commits
 
-**`0b61785`** 2026-08-21 — TD-39 closed: publish on the ref, not on "was not a workflow_dispatch" · **TD-127** **TD-39**
+**`b6e087f`** 2026-08-21 — docs: regenerate module READMEs with the TD-136 / TD-138 findings · **TD-136** **TD-138**
+
+> The FAS section now records what the module-local allocator audit actually found - that two of them had never run, naming columns fa_vouchermain does not have - and states plainly which half of TD-138 is still open: they all still read a MAX rather than incrementing a counter, so concurrent runs can collide.
+
+Files: `README.md`
+
+**`48280f0`** 2026-08-21 — TD-39 closed: publish on the ref, not on "was not a workflow_dispatch" · **TD-127** **TD-39**
 
 > build.yml set PUSH_PACKAGES=true for every event that was not a workflow_dispatch. That is safe only while `on: push:` lists master alone - so adding r2-dev-stable or pull_request to the trigger block, which is the one change everyone wants, would have published a NuGet package on every dev push. The register recorded that as "do not widen this", which left the trap in place rather than removing it.
 
 Files: `.github/workflows/build.yml`
 
-**`93ccd8d`** 2026-08-20 — docs: FAS voucher-integrity section + state-appendix convention in the generated README · **TD-134**
+**`94d2e36`** 2026-08-20 — docs: FAS voucher-integrity section + state-appendix convention in the generated README · **TD-134**
 
 > Every FAS-connected module's README now carries the voucher-integrity fixes (TD-134/135/139, pre-posting correction), the governing switches with defaults and implications, and the reconciliation flow - Dev/DevOps read it in the module they work in, not only in l3_FAS. Connection is MEASURED (git grep for the FAS/VoucherProcessing surface), never curated. State branches append below the STATE APPENDIX marker, never edit the generated body, so context and history survive the merge back onto r2-dev-stable.
 
 Files: `README.md`
 
-**`24fb92e`** 2026-08-19 — ci: park test workflows on manual trigger until feed auth is proven (TD-127) · **TD-127**
+**`318184e`** 2026-08-19 — ci: park test workflows on manual trigger until feed auth is proven (TD-127) · **TD-127**
 
 > The suites were switched on estate-wide and then failed at restore with 401 against the private GitHub Packages feed. Auth was added and hardened, but it could not be confirmed working from this side - the Actions logs are not readable here - so three blind fixes in a row is where this stops.
 
 Files: `.github/workflows/tests.yml`
 
-**`88a072a`** 2026-08-19 — fix(ci): make feed authentication tolerant so it cannot fail the job
+**`e9a0c54`** 2026-08-19 — fix(ci): make feed authentication tolerant so it cannot fail the job
 
 > A repo with no root NuGet.Config (l3_SHG) or one without a 'github' source made 'dotnet nuget update source' error and took the whole job down. Both are now a skip-with-notice. If the private feed really was needed, restore still reports the honest 401 rather than a confusing failure in the auth step.
 
 Files: `.github/workflows/tests.yml`
 
-**`66d146d`** 2026-08-19 — fix(ci): authenticate the private GitHub Packages feed before restore
+**`d1667a4`** 2026-08-19 — fix(ci): authenticate the private GitHub Packages feed before restore
 
 > Every tests.yml did a bare 'dotnet restore', which returns 401 Unauthorized: the Intellect.* packages live on the org's PRIVATE GitHub Packages feed (NuGet.Config -> source 'github') and credentials are deliberately not committed. build.yml already handled this via configure_github_packages_source() in build_push_script.sh; the test workflows never did, so they failed at restore before running one test.
 
 Files: `.github/workflows/tests.yml`
 
-**`3ff4c5b`** 2026-08-19 — ci(TD-125): add publish-free tests.yml running on r2-dev-stable · **TD-125** **TD-39**
+**`32c2aa1`** 2026-08-19 — ci(TD-125): add publish-free tests.yml running on r2-dev-stable · **TD-125** **TD-39**
 
 > This repo had no test workflow: build.yml only packs and publishes NuGet packages, so its suite had never run in CI. Cloned from the estate reference (l3_DMS/.github/workflows/tests.yml) - restore, build, test, upload .trx.
 
