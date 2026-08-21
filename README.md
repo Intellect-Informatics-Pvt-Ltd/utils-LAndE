@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `93ae793 Move to .NET 10, and pin the SDK that builds it` |
+| HEAD | `f2cf8b1 Converge on one MySQL driver, and drop a query that could never run` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -44,14 +44,24 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 
 | Id | Commits |
 |---|---|
-| **TD-39** | `48280f0`, `32c2aa1` |
+| **TD-39** | `f2cf8b1`, `48280f0`, `32c2aa1` |
 | **TD-125** | `32c2aa1` |
 | **TD-127** | `48280f0`, `318184e` |
 | **TD-134** | `94d2e36` |
 | **TD-136** | `b6e087f` |
 | **TD-138** | `b6e087f` |
+| **TD-153** | `f2cf8b1` |
+| **TD-154** | `f2cf8b1` |
+| **TD-155** | `f2cf8b1` |
+| **TD-156** | `f2cf8b1` |
 
 ### Commits
+
+**`f2cf8b1`** 2026-08-21 — Converge on one MySQL driver, and drop a query that could never run · **TD-153** **TD-154** **TD-155** **TD-156** **TD-39**
+
+> ONE DRIVER. The estate carried two ADO.NET drivers for the same database, often in the same process: MySql.Data at six versions and MySqlConnector at four, with 17 repos referencing both. Two drivers means two connection pools and two sets of semantics behind one connection string. Everything is now MySqlConnector 2.5.0 - one version, no MySql.Data anywhere.
+
+Files: `README.md`
 
 **`93ae793`** 2026-08-21 — Move to .NET 10, and pin the SDK that builds it
 
