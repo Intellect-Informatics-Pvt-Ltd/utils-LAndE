@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `9bdfeab docs: refresh generated READMEs after the MH Phase 0/1 work` |
+| HEAD | `a7bcf55 docs: refresh generated README after MH Phase 2` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
