@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `aefb748 docs: refresh the generated change log after the trailer removal` |
+| HEAD | `93ae793 Move to .NET 10, and pin the SDK that builds it` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -52,6 +52,18 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-138** | `b6e087f` |
 
 ### Commits
+
+**`93ae793`** 2026-08-21 — Move to .NET 10, and pin the SDK that builds it
+
+> TARGET FRAMEWORK. Every project moves net8.0 -> net10.0. The six utils repos that PUBLISH packages multi-target net8.0;net10.0 instead, so one package id at one version carries lib/net8.0 and lib/net10.0 and a consumer still on .NET 8 keeps resolving. Renaming the package for the new framework was considered and rejected: two ids for the same library means a diamond dependency can pull both, and two copies of the same types with different identities is a worse failure than the one it avoids.
+
+Files: `.github/workflows/build.yml`, `.github/workflows/tests.yml`, `Directory.Build.props`, `Directory.Packages.props`, `global.json`, `src/Intellect.Erp.AllObservabilityAndTraceabilitys/Intellect.Erp.AllObservabilityAndTraceabilitys.csproj`, `src/Intellect.Erp.Observability.AuditHooks/Intellect.Erp.Observability.AuditHooks.csproj`, `src/Intellect.Erp.Observability.Core/Intellect.Erp.Observability.Core.csproj`, `src/Intellect.Erp.RequestResponseLogging/Intellect.Erp.RequestResponseLogging.csproj`
+
+**`3d2f451`** 2026-08-21 — docs: refresh the generated change log after the trailer removal
+
+> The Co-Authored-By trailer was stripped from this repo's commits, which changed their SHAs. This README's change log is read from git, so it is regenerated to quote hashes that still resolve.
+
+Files: `README.md`
 
 **`aefb748`** 2026-08-21 — docs: refresh the generated change log after the trailer removal
 
