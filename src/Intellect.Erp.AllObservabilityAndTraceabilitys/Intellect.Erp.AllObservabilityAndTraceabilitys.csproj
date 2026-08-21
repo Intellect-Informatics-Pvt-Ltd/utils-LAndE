@@ -18,6 +18,11 @@
     <PackageReference Include="Intellect.Erp.Observability.Integrations.Messaging" />
     <PackageReference Include="Intellect.Erp.Observability.Integrations.Traceability" />
     <PackageReference Include="Intellect.Erp.Observability.Log4NetBridge" />
+    <!-- log4net is pulled in transitively by the Log4NetBridge FEED package, which still
+         resolves 3.1.0 and its GHSA-4f7c-pmjv-c25w advisory. A direct reference lets this
+         repo's central version (3.3.2) win. The lasting fix is republishing that package
+         against a patched log4net; remove this line when that happens. -->
+    <PackageReference Include="log4net" />
     <PackageReference Include="Intellect.Erp.Observability.Propagation" />
     <PackageReference Include="Intellect.Erp.Observability.Testing" />
   </ItemGroup>

@@ -1,0 +1,10 @@
+{
+  "//": "Pins the .NET SDK for this repo. Added 2026-08-21 with the move to .NET 10.",
+  "//why": "Before this file existed there was no pin anywhere in the estate: 'dotnet build' used whatever SDK the developer happened to have installed, while CI pinned a different one. A machine with 6.0, 7.0, 8.0 and 10.0 installed resolved to 10.0 silently. That is the classic 'works on my machine' gap, and it is one file to close.",
+  "//rollForward": "latestFeature accepts a newer 10.0.xxx feature band on a machine that has one, but never a different major - so a developer on 10.0.4xx builds, and nobody is silently moved to .NET 11.",
+  "sdk": {
+    "version": "10.0.302",
+    "rollForward": "latestFeature",
+    "allowPrerelease": false
+  }
+}
