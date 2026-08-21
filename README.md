@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `a7bcf55 docs: refresh generated README after MH Phase 2` |
+| HEAD | `f109707 docs: refresh generated README after MH0003 (baseline 1,148; legal-expense ledger)` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
