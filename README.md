@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `b6e087f docs: regenerate module READMEs with the TD-136 / TD-138 findings` |
+| HEAD | `aefb748 docs: refresh the generated change log after the trailer removal` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -52,6 +52,12 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-138** | `b6e087f` |
 
 ### Commits
+
+**`aefb748`** 2026-08-21 — docs: refresh the generated change log after the trailer removal
+
+> The Co-Authored-By trailer was stripped from this repo's commits on r2-dev-stable and the seven state branches, which changed their SHAs. This README's change log is read from git, so it is regenerated to quote hashes that still resolve.
+
+Files: `README.md`
 
 **`b6e087f`** 2026-08-21 — docs: regenerate module READMEs with the TD-136 / TD-138 findings · **TD-136** **TD-138**
 
