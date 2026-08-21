@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `f109707 docs: refresh generated README after MH0003 (baseline 1,148; legal-expense ledger)` |
+| HEAD | `43de68d docs: refresh generated README (baseline 1,150/44; PACS analytics + universal search shipped in l3_BDP)` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
