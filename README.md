@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `6f926ee docs: refresh generated README (analytics snapshot scheduler)` |
+| HEAD | `c27c8a0 docs: module README gains the analytics-surface contract (generated)` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -58,6 +58,10 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-158** | `560cd67` |
 
 ### Commits
+
+**`c27c8a0`** 2026-08-21 — docs: module README gains the analytics-surface contract (generated)
+
+Files: `README.md`
 
 **`560cd67`** 2026-08-21 — Close TD-155 and TD-156 - and both were wrong about their own severity · **TD-155** **TD-156** **TD-157** **TD-158**
 
