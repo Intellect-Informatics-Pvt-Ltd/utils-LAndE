@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `c27c8a0 docs: module README gains the analytics-surface contract (generated)` |
+| HEAD | `5f9dbfd docs: regenerated after the TN gap closure (TD-163)` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -48,16 +48,19 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-125** | `32c2aa1` |
 | **TD-127** | `48280f0`, `318184e` |
 | **TD-134** | `94d2e36` |
-| **TD-136** | `b6e087f` |
-| **TD-138** | `b6e087f` |
 | **TD-153** | `f2cf8b1` |
 | **TD-154** | `f2cf8b1` |
 | **TD-155** | `560cd67`, `f2cf8b1` |
 | **TD-156** | `560cd67`, `f2cf8b1` |
 | **TD-157** | `560cd67` |
 | **TD-158** | `560cd67` |
+| **TD-163** | `5f9dbfd` |
 
 ### Commits
+
+**`5f9dbfd`** 2026-08-22 — docs: regenerated after the TN gap closure (TD-163) · **TD-163**
+
+Files: `README.md`
 
 **`c27c8a0`** 2026-08-21 — docs: module README gains the analytics-surface contract (generated)
 
@@ -90,12 +93,6 @@ Files: `README.md`
 **`aefb748`** 2026-08-21 — docs: refresh the generated change log after the trailer removal
 
 > The Co-Authored-By trailer was stripped from this repo's commits on r2-dev-stable and the seven state branches, which changed their SHAs. This README's change log is read from git, so it is regenerated to quote hashes that still resolve.
-
-Files: `README.md`
-
-**`b6e087f`** 2026-08-21 — docs: regenerate module READMEs with the TD-136 / TD-138 findings · **TD-136** **TD-138**
-
-> The FAS section now records what the module-local allocator audit actually found - that two of them had never run, naming columns fa_vouchermain does not have - and states plainly which half of TD-138 is still open: they all still read a MAX rather than incrementing a counter, so concurrent runs can collide.
 
 Files: `README.md`
 
