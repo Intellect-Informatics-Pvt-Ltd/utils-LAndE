@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `94008e7 docs: README regenerated after the DevOps port renumber (7xxx -> 5xxx)` |
+| HEAD | `c125e84 docs: README regenerated` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -59,6 +59,12 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-163** | `59ddd61`, `5f9dbfd` |
 
 ### Commits
+
+**`c125e84`** 2026-08-27 — docs: README regenerated
+
+> Picks up today's commits (statutory reports, membership life-column correction, NHibernate cleanup).
+
+Files: `README.md`
 
 **`94008e7`** 2026-08-27 — docs: README regenerated after the DevOps port renumber (7xxx -> 5xxx)
 
@@ -253,10 +259,6 @@ Files: `docs/Developer_User_Guide.pdf`
 **`93851ae`** 2026-04-24 — Observability - Logging and Error Handling
 
 Files: `.gitignore`, `.kiro/specs/utils-lande-observability/.config.kiro`, `.kiro/specs/utils-lande-observability/design.md`, `.kiro/specs/utils-lande-observability/requirements.md`, `.kiro/specs/utils-lande-observability/tasks.md`, `Directory.Build.props`, `Directory.Packages.props`, `Intellect.Erp.Observability.sln`, `NuGet.Config`, `README.md` — and 177 more
-
-**`b5a93b6`** 2026-04-23 — Initial commit
-
-Files: `.gitignore`, `README.md`
 
 ## How to run it
 
