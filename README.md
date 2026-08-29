@@ -7,7 +7,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `c125e84 docs: README regenerated` |
+| HEAD | `3feb48b docs: README regenerated after the 08-27/28 platform work` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -49,7 +49,7 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-127** | `48280f0`, `318184e` |
 | **TD-134** | `94d2e36` |
 | **TD-136** | `59ddd61` |
-| **TD-138** | `59ddd61` |
+| **TD-138** | `3feb48b`, `59ddd61` |
 | **TD-153** | `f2cf8b1` |
 | **TD-154** | `f2cf8b1` |
 | **TD-155** | `560cd67`, `f2cf8b1` |
@@ -59,6 +59,12 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-163** | `59ddd61`, `5f9dbfd` |
 
 ### Commits
+
+**`3feb48b`** 2026-08-27 — docs: README regenerated after the 08-27/28 platform work · **TD-138**
+
+> Picks up the statutory reports, AgriStack surface, TD-138 counters, the reversal endpoints and the DevOps port renumber.
+
+Files: `README.md`
 
 **`c125e84`** 2026-08-27 — docs: README regenerated
 
@@ -255,10 +261,6 @@ Files: `.github/workflows/build.yml`
 **`d331ee4`** 2026-04-24 — Dev Guide PDF
 
 Files: `docs/Developer_User_Guide.pdf`
-
-**`93851ae`** 2026-04-24 — Observability - Logging and Error Handling
-
-Files: `.gitignore`, `.kiro/specs/utils-lande-observability/.config.kiro`, `.kiro/specs/utils-lande-observability/design.md`, `.kiro/specs/utils-lande-observability/requirements.md`, `.kiro/specs/utils-lande-observability/tasks.md`, `Directory.Build.props`, `Directory.Packages.props`, `Intellect.Erp.Observability.sln`, `NuGet.Config`, `README.md` — and 177 more
 
 ## How to run it
 
