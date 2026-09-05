@@ -1,6 +1,8 @@
 # utils-LAndE
 
-> No curated summary for this repo yet. What it does is best read from its 2 controller file(s); add a line to `PURPOSE` in `build/generate-module-readmes.py` rather than editing this file.
+> Observability - structured logging, request/response capture and audit hooks.
+
+*(That one line is curated. Everything else on this page is measured at generation time — see the foot of the file.)*
 
 ## At a glance
 
