@@ -9,7 +9,7 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `5f9dbfd docs: regenerated after the TN gap closure (TD-163)` |
+| HEAD | `2e850d7 README: regenerated, and the six utils repos finally have a purpose line` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
@@ -59,6 +59,12 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-163** | `5f9dbfd` |
 
 ### Commits
+
+**`2e850d7`** 2026-09-05 — README: regenerated, and the six utils repos finally have a purpose line
+
+> Regenerated after this week: the new controllers, tables and routes now appear in each module page — WorkItemInbox in configurationsAPI, the two oracle tables in FAS, the four new client surfaces in ERPClient.
+
+Files: `README.md`
 
 **`5f9dbfd`** 2026-08-22 — docs: regenerated after the TN gap closure (TD-163) · **TD-163**
 
