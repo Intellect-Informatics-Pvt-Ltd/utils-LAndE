@@ -228,28 +228,60 @@ Files: `.gitignore`, `.kiro/specs/utils-lande-observability/.config.kiro`, `.kir
 
 Files: `.gitignore`, `README.md`
 
-## How to run it
+## Build, run and test it
+
+Written for two readers: the DevOps engineer who has to produce a build of this repo, and the tester who has to exercise it. Everything below is measured from this checkout (port, profile, test projects, medium membership); the commands are the estate's, not this repo's own.
+
+### 1. Build and unit-test on any machine
+
+The SDK is pinned in the platform repo's `global.json`; the private NuGet feed and the token contract are checked by `ops/l2r2 doctor` and `ops/l2r2 env check` there. Do those first on a new machine - a feed failure reads as a compile error otherwise.
 
 ```bash
 git clone <this repo> && cd utils-LAndE
 git checkout r2-dev-stable
-dotnet build Intellect.Erp.Observability.sln
-dotnet test Intellect.Erp.Observability.sln
+dotnet restore Intellect.Erp.Observability.sln
+dotnet build Intellect.Erp.Observability.sln -c Release --no-restore
+dotnet test Intellect.Erp.Observability.sln -c Release --no-build --logger "trx;LogFileName=utils-LAndE.trx" --results-directory artifacts/test-results
 ```
 
-The database comes from the platform repo, not from here:
+The verdict is the **failure set against the recorded baseline**, not a count and not rc=0 - some suites carry known pre-existing failures that are recorded rather than hidden:
 
 ```bash
 # in l2r2-platform-build
-mysql -u root -p <empty_database> < db/stable_baseline_ddl.sql
+ops/l2r2 test run --repo utils-LAndE                 # run it, print the result
+ops/l2r2 test baseline compare --repo utils-LAndE    # diff the failure SET against the baseline
+ops/l2r2 test baseline show --repo utils-LAndE       # what is recorded, and when
 ```
 
-It **refuses a non-empty schema** by design. Verify by counting, not by exit code:
+A test that fails here and is NOT in the baseline is a regression. A test in the baseline that now passes is progress - re-record it (`baseline record --apply`) so the next person does not have to rediscover it.
+
+### 2. Where it runs
+
+`utils-LAndE` is a **library**, consumed by the service modules as a package from the private feed. It has no port, no container, no systemd unit and no place of its own on the offline medium: it ships inside every service that references it. To see it running, bring up a service that uses it (section 5e.1b of the platform README) and exercise that service.
+
+### 3. The database
+
+The database comes from the platform repo, not from here. This repo's own `.sql` files describe its tables (0 declared); the ONE schema every state runs is `db/stable_baseline_ddl.sql`, and a module's `CREATE TABLE IF NOT EXISTS` never runs against it because the table is already there.
 
 ```bash
+# in l2r2-platform-build
+ops/l2r2 db baseline --database <empty_database> --apply   # imposes db/stable_baseline_ddl.sql, counted
 mysql -u root -p -N -e "SELECT COUNT(*) FROM information_schema.tables \
-  WHERE table_schema='<db>' AND table_type='BASE TABLE';"
+  WHERE table_schema='<db>' AND table_type='BASE TABLE';"    # verify by counting, never by rc
 ```
+
+It **refuses a non-empty schema** by design. Apply it in a Linux container with `lower_case_table_names=0`: a Mac cannot see the case defects that bite on a server (platform README §4.8b).
+
+### 4. Before you push
+
+```bash
+# in l2r2-platform-build - the same guards CI runs, in the same order
+ops/l2r2 ci guards            # static: DDL conventions, baseline/module agreement, secrets, READMEs
+ops/l2r2 ci schema            # needs a MySQL you can write to: applies the baseline into a throwaway schema
+python3 build/config-hygiene.py scan --repos utils-LAndE --branch r2-dev-stable   # no credential in any appsettings
+```
+
+A secret committed here does not only fail CI: the offline media builder **refuses the payload** (`epacs-media`, exit 3, naming file and key), so a medium cannot be cut until it is removed.
 
 ## State READMEs — append, never fork
 
