@@ -40,7 +40,7 @@ below only dates. Read these before modifying the subsystems they cover.
 
 ## Change log — measured from git, newest first
 
-Every entry below is read from this repo's own commits: **what** changed (the subject), **why** (the commit body's own first paragraph), **which files**, and the register / state-customization **ids** it carries. When a maintenance question arrives as a TD-xx or a state id (KA/AS/TN/WBxxxx), the index maps it straight to the commits, and each commit to its files.
+Every entry below is read from this repo's own commits: **what** changed (the subject), **why** (the commit body's own first paragraph), **which files**, and the register / state-customization **ids** it carries. When a maintenance question arrives as a TD-xx or a state id (a two-letter state prefix and four digits: KA0005, MH0001, GJ0012...), the index maps it straight to the commits, and each commit to its files. Commits carrying a state id are indexed however old they are; everything else is the most recent 40.
 
 ### Register & customization id index
 
