@@ -8,7 +8,7 @@
 
 | | |
 |---|---|
-| Current branch | `HEAD` |
+| Current branch | `r2-dev-stable` |
 | HEAD | `2e850d7 README: regenerated, and the six utils repos finally have a purpose line` |
 | C# files | 165 |
 | Controllers / HTTP endpoints | 2 / 5 |
