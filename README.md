@@ -241,8 +241,12 @@ git clone <this repo> && cd utils-LAndE
 git checkout r2-dev-stable
 dotnet restore Intellect.Erp.Observability.sln
 dotnet build Intellect.Erp.Observability.sln -c Release --no-restore
-dotnet test Intellect.Erp.Observability.sln -c Release --no-build --logger "trx;LogFileName=utils-LAndE.trx" --results-directory artifacts/test-results
+dotnet test tests/Intellect.Erp.ErrorHandling.UnitTests/Intellect.Erp.ErrorHandling.UnitTests.csproj -c Release --no-build --logger "trx;LogFilePrefix=Intellect.Erp.ErrorHandling.UnitTests" --results-directory artifacts/test-results
+dotnet test tests/Intellect.Erp.Observability.IntegrationTests/Intellect.Erp.Observability.IntegrationTests.csproj -c Release --no-build --logger "trx;LogFilePrefix=Intellect.Erp.Observability.IntegrationTests" --results-directory artifacts/test-results
+dotnet test tests/Intellect.Erp.Observability.UnitTests/Intellect.Erp.Observability.UnitTests.csproj -c Release --no-build --logger "trx;LogFilePrefix=Intellect.Erp.Observability.UnitTests" --results-directory artifacts/test-results
 ```
+
+Each test project is run **by its csproj, never through the solution**: a solution can leave a test project unbuilt (its configuration rows carry no `Build.0`) and report green having run nothing - that hid 86 failures in `l3_auditProcessing`. `LogFilePrefix` writes one trx per target framework; a fixed `LogFileName` lets the second framework of a multi-targeted project overwrite the first.
 
 The verdict is the **failure set against the recorded baseline**, not a count and not rc=0 - some suites carry known pre-existing failures that are recorded rather than hidden:
 
@@ -254,6 +258,8 @@ ops/l2r2 test baseline show --repo utils-LAndE       # what is recorded, and whe
 ```
 
 A test that fails here and is NOT in the baseline is a regression. A test in the baseline that now passes is progress - re-record it (`baseline record --apply`) so the next person does not have to rediscover it.
+
+**Where this module stands right now** - every failing test by name, new versus known, what each open pull request into `r2-dev-stable` does to the suite, and the trend since August - is `docs/testing/results/utils-LAndE.md` in the platform repo, re-measured by `build/test-estate.py run --prs`.
 
 ### 2. Where it runs
 
