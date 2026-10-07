@@ -9,8 +9,8 @@
 | | |
 |---|---|
 | Current branch | `r2-dev-stable` |
-| HEAD | `2e850d7 README: regenerated, and the six utils repos finally have a purpose line` |
-| C# files | 165 |
+| HEAD | `ffd4178 Observability gains SensitiveText (mask addresses, logins and connection values, an exception's client-safe text, the db# fingerprint), the global exception handler returns exception details only in Development - not merely outside an environment named Production, which the estate's state-named environments never were - and masks every message it returns or logs, the redaction engine masks MySQL 'user'@'host', connection-string values, IPv4 addresses and URL credentials, and the request/response logger always masks Aadhaar, mobile, OTP, PIN, security-answer and connection-string fields whatever a service configures.` |
+| C# files | 168 |
 | Controllers / HTTP endpoints | 2 / 5 |
 | SQL files / tables declared | 0 / 0 |
 | Test projects | `Intellect.Erp.ErrorHandling.UnitTests`, `Intellect.Erp.Observability.IntegrationTests`, `Intellect.Erp.Observability.Testing`, `Intellect.Erp.Observability.UnitTests` |
@@ -59,6 +59,10 @@ Every entry below is read from this repo's own commits: **what** changed (the su
 | **TD-163** | `5f9dbfd` |
 
 ### Commits
+
+**`ffd4178`** 2026-10-07 — Observability gains SensitiveText (mask addresses, logins and connection values, an exception's client-safe text, the db# fingerprint), the global exception handler returns exception details only in Development - not merely outside an environment named Production, which the estate's state-named environments never were - and masks every message it returns or logs, the redaction engine masks MySQL 'user'@'host', connection-string values, IPv4 addresses and URL credentials, and the request/response logger always masks Aadhaar, mobile, OTP, PIN, security-answer and connection-string fields whatever a service configures.
+
+Files: `src/Intellect.Erp.Observability.Abstractions/SensitiveText.cs`, `src/Intellect.Erp.Observability.AspNetCore/Middleware/GlobalExceptionMiddleware.cs`, `src/Intellect.Erp.Observability.Core/DefaultRedactionEngine.cs`, `src/Intellect.Erp.RequestResponseLogging/Helpers/PayloadMaskingHelper.cs`, `src/Intellect.Erp.RequestResponseLogging/Intellect.Erp.RequestResponseLogging.csproj`, `tests/Intellect.Erp.Observability.IntegrationTests/GlobalExceptionMiddlewareIntegrationTests.cs`, `tests/Intellect.Erp.Observability.UnitTests/Abstractions/SensitiveTextTests.cs`, `tests/Intellect.Erp.Observability.UnitTests/Intellect.Erp.Observability.UnitTests.csproj`, `tests/Intellect.Erp.Observability.UnitTests/RequestResponseLogging/PayloadMaskingTests.cs`
 
 **`2e850d7`** 2026-09-05 — README: regenerated, and the six utils repos finally have a purpose line
 
