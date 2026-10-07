@@ -358,6 +358,28 @@ public sealed class DefaultRedactionEngine : IRedactionEngine
         yield return new CompiledPattern(
             new Regex(@"(?i)(password|pwd)\s*=\s*[^;]+", RegexOptions.Compiled),
             "$1=***");
+
+        // 2026-10-07 (the log-leak sweep): the rest of a connection string, MySQL's 'user'@'host', IPv4
+        // addresses with their port, and credentials inside a URL - the topology a log must not carry.
+        // MySQL 'user'@'host' (access-denied and definer messages); before the email pattern can see it
+        yield return new CompiledPattern(
+            new Regex(@"'[^'\s]{1,64}'@'[^'\s]{1,255}'", RegexOptions.Compiled),
+            "'***'@'***'");
+
+        // Connection-string server, user and database values
+        yield return new CompiledPattern(
+            new Regex(@"(?i)\b(server|host|data source|datasource|user id|userid|uid|database|initial catalog)\s*=\s*[^;'""]+", RegexOptions.Compiled),
+            "$1=***");
+
+        // IPv4 with an optional port
+        yield return new CompiledPattern(
+            new Regex(@"\b(?:\d{1,3}\.){3}\d{1,3}(?::\d{1,5})?\b", RegexOptions.Compiled),
+            "[address]");
+
+        // Credentials inside a URL
+        yield return new CompiledPattern(
+            new Regex(@"(?i)\b([a-z][a-z0-9+.-]*://)[^/\s:@]+:[^/\s@]+@", RegexOptions.Compiled),
+            "$1***@");
     }
 
     #endregion

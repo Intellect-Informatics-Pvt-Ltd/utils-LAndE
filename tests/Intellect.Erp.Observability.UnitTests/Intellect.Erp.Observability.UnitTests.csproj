@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\src\Intellect.Erp.Observability.AuditHooks\Intellect.Erp.Observability.AuditHooks.csproj" />
     <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Log4NetBridge\Intellect.Erp.Observability.Log4NetBridge.csproj" />
     <ProjectReference Include="..\..\src\Intellect.Erp.Observability.Testing\Intellect.Erp.Observability.Testing.csproj" />
+    <ProjectReference Include="..\..\src\Intellect.Erp.RequestResponseLogging\Intellect.Erp.RequestResponseLogging.csproj" />
   </ItemGroup>
 
   <ItemGroup>

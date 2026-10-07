@@ -16,6 +16,26 @@ namespace Intellect.Erp.RequestResponseLogging.Helpers
         private const string MaskedValue = "***MASKED***";
 
         /// <summary>
+        /// Field names masked whatever a service configures (2026-10-07, the log-leak sweep). The configured
+        /// <c>SensitiveFields</c> REPLACE the defaults, and every module configured the same five
+        /// (password, token, authorization, aadhaar, pan) - matched by exact name, so <c>AadharNo</c>,
+        /// <c>MobileNo</c>, <c>otp</c>, <c>securityAnswer</c> and the tenant connection string <c>connStr1</c>
+        /// were logged in every environment the middleware runs in. These are added to whatever is configured.
+        /// </summary>
+        internal static readonly HashSet<string> AlwaysSensitive = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "password", "pwd", "passwd", "newPassword", "oldPassword", "confirmPassword", "securityAnswer",
+            "otp", "otpCode", "pin", "mpin", "token", "accessToken", "refreshToken", "idToken", "authToken", "jwt",
+            "secret", "clientSecret", "client_secret", "apiKey", "api_key", "authorization", "cookie",
+            "connectionString", "connStr", "connStr1",
+            "aadhaar", "aadhar", "aadhaarNo", "aadharNo", "aadhaarNumber", "aadharNumber", "uidNumber",
+            "pan", "panNo", "panNumber", "mobile", "mobileNo", "mobileNumber", "phone", "phoneNo", "phoneNumber",
+        };
+
+        private static bool IsSensitive(string name, IReadOnlyCollection<string> configured)
+            => AlwaysSensitive.Contains(name) || configured.Contains(name, StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
         /// Masks sensitive values in an arbitrary JSON payload string.
         /// </summary>
         public static string MaskJson(string payload, IReadOnlyCollection<string> sensitiveFields)
@@ -50,7 +70,7 @@ namespace Intellect.Erp.RequestResponseLogging.Helpers
             var values = QueryHelpers.ParseQuery(queryString);
             var masked = values.ToDictionary(
                 pair => pair.Key,
-                pair => sensitiveFields.Contains(pair.Key, StringComparer.OrdinalIgnoreCase)
+                pair => IsSensitive(pair.Key, sensitiveFields)
                     ? MaskedValue
                     : string.Join(",", pair.Value.ToArray()),
                 StringComparer.OrdinalIgnoreCase);
@@ -79,7 +99,7 @@ namespace Intellect.Erp.RequestResponseLogging.Helpers
                 }
 
                 var value = header.Value.ToString();
-                allowedHeaders[header.Key] = options.SensitiveFields.Contains(header.Key, StringComparer.OrdinalIgnoreCase)
+                allowedHeaders[header.Key] = IsSensitive(header.Key, options.SensitiveFields)
                     ? MaskedValue
                     : value;
             }
@@ -97,7 +117,7 @@ namespace Intellect.Erp.RequestResponseLogging.Helpers
             foreach (var key in form.Keys)
             {
                 var fieldValues = form[key].ToArray() ?? Array.Empty<string>();
-                values[key] = sensitiveFields.Contains(key, StringComparer.OrdinalIgnoreCase)
+                values[key] = IsSensitive(key, sensitiveFields)
                     ? MaskedValue
                     : string.Join(",", fieldValues);
             }
@@ -116,7 +136,7 @@ namespace Intellect.Erp.RequestResponseLogging.Helpers
             {
                 foreach (var child in obj.Properties())
                 {
-                    if (sensitiveFields.Contains(child.Name, StringComparer.OrdinalIgnoreCase))
+                    if (IsSensitive(child.Name, sensitiveFields))
                     {
                         child.Value = MaskedValue;
                         continue;

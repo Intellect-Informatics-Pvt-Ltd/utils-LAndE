@@ -59,15 +59,16 @@ public sealed class GlobalExceptionMiddleware
     private async Task HandleExceptionAsync(HttpContext context, Exception exception, ErrorHandlingOptions options)
     {
         var correlationId = context.Items["CorrelationId"]?.ToString() ?? string.Empty;
-        var isProduction = _environment.IsProduction();
-
-        // Refuse to enable exception details in Production
+        // Exception details (type, stack trace) go to a caller ONLY in Development (2026-10-07). This used to
+        // refuse them only when the environment was "Production" - and the estate's deployments name the
+        // environment after the state (ASPNETCORE_ENVIRONMENT=MH, stable, ...), so IsProduction() was never
+        // true where it mattered and the option alone decided.
         var includeDetails = options.IncludeExceptionDetailsInResponse;
-        if (includeDetails && isProduction)
+        if (includeDetails && !_environment.IsDevelopment())
         {
             _logger.LogWarning(
-                "IncludeExceptionDetailsInResponse is enabled but environment is Production. " +
-                "Exception details will NOT be included in responses.");
+                "IncludeExceptionDetailsInResponse is enabled but the environment is {Environment}, not Development. " +
+                "Exception details will NOT be included in responses.", _environment.EnvironmentName);
             includeDetails = false;
         }
 
@@ -85,7 +86,7 @@ public sealed class GlobalExceptionMiddleware
             "Unhandled exception {ErrorCode} for correlation {CorrelationId}: {ErrorMessage}",
             errorResponse.ErrorCode,
             correlationId,
-            exception.Message);
+            SensitiveText.Mask(exception.Message));
 
         if (!context.Response.HasStarted)
         {
@@ -116,7 +117,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 400;
                 errorCode = validationEx.ErrorCode;
                 title = "Validation Error";
-                message = validationEx.Message;
+                message = includeDetails ? validationEx.Message : SensitiveText.Mask(validationEx.Message);
                 severity = validationEx.Severity.ToString();
                 retryable = validationEx.Retryable;
                 fieldErrors = validationEx.FieldErrors;
@@ -126,7 +127,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 422;
                 errorCode = bizEx.ErrorCode;
                 title = "Business Rule Violation";
-                message = bizEx.Message;
+                message = includeDetails ? bizEx.Message : SensitiveText.Mask(bizEx.Message);
                 severity = bizEx.Severity.ToString();
                 retryable = bizEx.Retryable;
                 break;
@@ -135,7 +136,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 404;
                 errorCode = nfEx.ErrorCode;
                 title = "Not Found";
-                message = nfEx.Message;
+                message = includeDetails ? nfEx.Message : SensitiveText.Mask(nfEx.Message);
                 severity = nfEx.Severity.ToString();
                 retryable = nfEx.Retryable;
                 break;
@@ -144,7 +145,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 409;
                 errorCode = conflictEx.ErrorCode;
                 title = "Conflict";
-                message = conflictEx.Message;
+                message = includeDetails ? conflictEx.Message : SensitiveText.Mask(conflictEx.Message);
                 severity = conflictEx.Severity.ToString();
                 retryable = conflictEx.Retryable;
                 break;
@@ -153,7 +154,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 401;
                 errorCode = unauthEx.ErrorCode;
                 title = "Unauthorized";
-                message = unauthEx.Message;
+                message = includeDetails ? unauthEx.Message : SensitiveText.Mask(unauthEx.Message);
                 severity = unauthEx.Severity.ToString();
                 retryable = unauthEx.Retryable;
                 break;
@@ -162,7 +163,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 403;
                 errorCode = forbiddenEx.ErrorCode;
                 title = "Forbidden";
-                message = forbiddenEx.Message;
+                message = includeDetails ? forbiddenEx.Message : SensitiveText.Mask(forbiddenEx.Message);
                 severity = forbiddenEx.Severity.ToString();
                 retryable = forbiddenEx.Retryable;
                 break;
@@ -171,7 +172,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 409;
                 errorCode = concurrencyEx.ErrorCode;
                 title = "Concurrency Conflict";
-                message = concurrencyEx.Message;
+                message = includeDetails ? concurrencyEx.Message : SensitiveText.Mask(concurrencyEx.Message);
                 severity = concurrencyEx.Severity.ToString();
                 retryable = concurrencyEx.Retryable;
                 break;
@@ -180,7 +181,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 500;
                 errorCode = dataEx.ErrorCode;
                 title = "Data Integrity Error";
-                message = dataEx.Message;
+                message = includeDetails ? dataEx.Message : SensitiveText.Mask(dataEx.Message);
                 severity = dataEx.Severity.ToString();
                 retryable = dataEx.Retryable;
                 break;
@@ -189,7 +190,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 502;
                 errorCode = integrationEx.ErrorCode;
                 title = "Integration Error";
-                message = integrationEx.Message;
+                message = includeDetails ? integrationEx.Message : SensitiveText.Mask(integrationEx.Message);
                 severity = integrationEx.Severity.ToString();
                 retryable = integrationEx.Retryable;
                 break;
@@ -198,7 +199,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 503;
                 errorCode = depEx.ErrorCode;
                 title = "Dependency Unavailable";
-                message = depEx.Message;
+                message = includeDetails ? depEx.Message : SensitiveText.Mask(depEx.Message);
                 severity = depEx.Severity.ToString();
                 retryable = depEx.Retryable;
                 break;
@@ -207,7 +208,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 502;
                 errorCode = extEx.ErrorCode;
                 title = "External System Error";
-                message = extEx.Message;
+                message = includeDetails ? extEx.Message : SensitiveText.Mask(extEx.Message);
                 severity = extEx.Severity.ToString();
                 retryable = extEx.Retryable;
                 break;
@@ -216,7 +217,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 500;
                 errorCode = sysEx.ErrorCode;
                 title = "System Error";
-                message = sysEx.Message;
+                message = includeDetails ? sysEx.Message : SensitiveText.Mask(sysEx.Message);
                 severity = sysEx.Severity.ToString();
                 retryable = sysEx.Retryable;
                 break;
@@ -226,7 +227,7 @@ public sealed class GlobalExceptionMiddleware
                 statusCode = 500;
                 errorCode = appEx.ErrorCode;
                 title = "Application Error";
-                message = appEx.Message;
+                message = includeDetails ? appEx.Message : SensitiveText.Mask(appEx.Message);
                 severity = appEx.Severity.ToString();
                 retryable = appEx.Retryable;
                 break;

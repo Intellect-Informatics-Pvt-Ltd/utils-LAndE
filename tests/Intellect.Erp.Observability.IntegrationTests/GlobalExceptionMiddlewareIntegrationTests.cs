@@ -180,3 +180,36 @@ public class GlobalExceptionMiddlewareProductionTests : IClassFixture<Production
             "Production responses must not include supportReference");
     }
 }
+
+/// <summary>
+/// The estate names its environments after the state (ASPNETCORE_ENVIRONMENT=MH, stable, ...), so a guard
+/// keyed on "Production" never fired where it mattered (2026-10-07). Details now need Development.
+/// </summary>
+public class StateNamedEnvironmentWebApplicationFactory : ProductionWebApplicationFactory
+{
+    protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
+    {
+        base.ConfigureWebHost(builder);
+        Microsoft.AspNetCore.Hosting.HostingAbstractionsWebHostBuilderExtensions.UseEnvironment(builder, "MH");
+    }
+}
+
+public class GlobalExceptionMiddlewareStateEnvironmentTests : IClassFixture<StateNamedEnvironmentWebApplicationFactory>
+{
+    private readonly HttpClient _client;
+
+    public GlobalExceptionMiddlewareStateEnvironmentTests(StateNamedEnvironmentWebApplicationFactory factory)
+    {
+        _client = factory.CreateClient();
+    }
+
+    [Fact]
+    public async Task A_state_named_environment_with_details_switched_on_still_gets_no_stack_trace()
+    {
+        var response = await _client.GetAsync("/test/throw/unknown");
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        doc.RootElement.TryGetProperty("stackTrace", out _).Should().BeFalse(
+            "only Development may see a stack trace; ASPNETCORE_ENVIRONMENT=MH is a state's live deployment");
+        doc.RootElement.TryGetProperty("exceptionType", out _).Should().BeFalse();
+    }
+}
