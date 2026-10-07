@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+      # Owner ruling 2026-10-07: a push to r2-dev-stable publishes each package at the version
+      # its own csproj declares, and only when that version is newer than the feed's
+      # (VERSION_SOURCE=csproj in build_push_script.sh). master and workflow_dispatch are unchanged.
+      - r2-dev-stable
 
   workflow_dispatch:
     inputs:
@@ -34,6 +38,10 @@ jobs:
     name: Build and publish NuGet packages
     runs-on: ubuntu-latest
     timeout-minutes: 45
+
+    outputs:
+      # "<PackageId> <Version>" per line for every package this run actually pushed (csproj mode).
+      published: ${{ steps.publish.outputs.published }}
 
     env:
       GITHUB_OWNER: ${{ github.repository_owner }}
@@ -96,6 +104,7 @@ jobs:
           echo "Repository configuration validation completed."
 
       - name: Build, pack and optionally publish NuGet packages
+        id: publish
         shell: bash
         env:
           DISPATCH_PACK_ALL: ${{ inputs.pack_all }}
@@ -118,6 +127,12 @@ jobs:
             # published a package on every dev push. This is behaviour-
             # preserving today and makes that widening safe to do.
             case "$GITHUB_REF" in
+              refs/heads/r2-dev-stable)
+                # Each package at its own declared version, pushed only if newer than the feed.
+                export PUSH_PACKAGES="true"
+                export VERSION_SOURCE="csproj"
+                echo "::notice::r2-dev-stable push: publishing csproj-declared versions that are newer than the feed"
+                ;;
               refs/heads/master|refs/heads/main|refs/tags/v*)
                 export PUSH_PACKAGES="true"
                 ;;
@@ -129,7 +144,18 @@ jobs:
             export NEW_VERSION=""
           fi
 
+          export PUBLISHED_MANIFEST="artifacts/published-packages.txt"
           bash ./build_push_script.sh
+
+          if [[ -s "$PUBLISHED_MANIFEST" ]]; then
+            echo "Published by this run:"
+            cat "$PUBLISHED_MANIFEST"
+            {
+              echo "published<<NUGET_PUBLISHED_EOF"
+              cat "$PUBLISHED_MANIFEST"
+              echo "NUGET_PUBLISHED_EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Upload generated NuGet packages
         if: always()
@@ -139,3 +165,41 @@ jobs:
           path: artifacts/nuget/*.nupkg
           if-no-files-found: warn
           retention-days: 7
+
+  # Evidence that needs no API access: every package the build job actually pushed gets a
+  # lightweight tag nuget/<PackageId>/<Version> on the commit it was built from. Anyone can
+  # confirm a publish with:  git ls-remote --tags origin 'nuget/*'
+  tag:
+    name: Tag published packages
+    needs: build
+    if: needs.build.outputs.published != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create and push nuget/<PackageId>/<Version> tags
+        shell: bash
+        env:
+          PUBLISHED: ${{ needs.build.outputs.published }}
+        run: |
+          set -euo pipefail
+
+          while read -r package_id package_version; do
+            [[ -z "${package_id:-}" ]] && continue
+            tag="nuget/${package_id}/${package_version}"
+
+            if [[ -n "$(git ls-remote --tags origin "refs/tags/${tag}")" ]]; then
+              echo "::notice::${tag} already exists - skipped"
+              continue
+            fi
+
+            git tag "$tag" "$GITHUB_SHA"
+            git push origin "refs/tags/${tag}"
+            echo "::notice::tagged ${tag} on ${GITHUB_SHA}"
+          done <<< "$PUBLISHED"

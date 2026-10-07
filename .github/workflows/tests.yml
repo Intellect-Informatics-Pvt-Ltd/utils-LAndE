@@ -3,9 +3,9 @@
 #
 # Trigger note (TD-39): r2-dev-stable is the branch development actually happens on, so it
 # is included here. This workflow only restores/builds/tests and publishes nothing. The
-# NuGet publish lives in build.yml, which stays pinned to master on purpose -- do NOT add
-# r2-dev-stable or pull_request there, because its script forces PUSH_PACKAGES=true for
-# any event that is not workflow_dispatch.
+# NuGet publish lives in build.yml. Since 2026-10-07 build.yml also runs on r2-dev-stable, where
+# it publishes only a csproj-declared version newer than the feed (VERSION_SOURCE=csproj); it
+# publishes because of the ref (TD-39), so adding pull_request there would still publish nothing.
 name: Tests
 
 # PARKED 2026-08-19 - manual trigger only.

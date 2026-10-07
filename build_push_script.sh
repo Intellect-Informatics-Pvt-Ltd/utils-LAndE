@@ -16,6 +16,20 @@ PUSH_PACKAGES="${PUSH_PACKAGES:-true}"
 PACK_ALL="${PACK_ALL:-true}"
 MAX_VERSION_PAGES="${MAX_VERSION_PAGES:-20}"
 
+# Where a package's version comes from.
+#   feed   (default; master pushes and workflow_dispatch - unchanged): every package is stamped with
+#          NEW_VERSION, or with (the highest version published for any selected package) + 1 patch.
+#   csproj (a push to r2-dev-stable, owner ruling 2026-10-07): each packable project is packed at
+#          the version its OWN project declares (<Version>/<PackageVersion>/<VersionPrefix> in the
+#          csproj or a Directory.Build.props above it, read back with `dotnet msbuild
+#          -getProperty:PackageVersion`), and pushed only when that version is a plain release
+#          (X.Y.Z) strictly newer than every version of that package id already on the feed.
+#          Anything else - undeclared, prerelease, equal or older - is logged and skipped.
+#          Every package actually pushed is written to PUBLISHED_MANIFEST as "<PackageId> <Version>",
+#          which build.yml turns into the git tag nuget/<PackageId>/<Version>.
+VERSION_SOURCE="${VERSION_SOURCE:-feed}"
+PUBLISHED_MANIFEST="${PUBLISHED_MANIFEST:-artifacts/published-packages.txt}"
+
 NUGET_API_KEY="${NUGET_API_KEY:-${GITHUB_PACKAGES_PAT:-${GITHUB_TOKEN:-}}}"
 PACKAGE_QUERY_TOKEN="${GITHUB_PACKAGES_PAT:-${GITHUB_TOKEN:-}}"
 
@@ -49,6 +63,16 @@ case "$PUSH_PACKAGES" in
     true|false) ;;
     *) die "PUSH_PACKAGES must be true or false, but was '$PUSH_PACKAGES'." ;;
 esac
+
+case "$VERSION_SOURCE" in
+    feed|csproj) ;;
+    *) die "VERSION_SOURCE must be feed or csproj, but was '$VERSION_SOURCE'." ;;
+esac
+
+if [ "$VERSION_SOURCE" = "csproj" ] &&
+   [ -n "$NEW_VERSION" ]; then
+    die "NEW_VERSION cannot be combined with VERSION_SOURCE=csproj: the csproj is the version."
+fi
 
 if [ -n "$NEW_VERSION" ] &&
    [[ ! "$NEW_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
@@ -293,7 +317,10 @@ is_meta_project() {
         "$csproj_file"
 }
 
-get_latest_version() {
+# Every version name of one package id on the feed, one per line (may include blank lines).
+# Split out of get_latest_version unchanged so csproj mode can read the whole list; this is also
+# the function a local dry run replaces with a stub (see the release notes in docs/README-notes.md).
+published_versions() {
     local package_id="$1"
 
     if [ -z "$PACKAGE_QUERY_TOKEN" ]; then
@@ -356,6 +383,17 @@ get_latest_version() {
                 ;;
         esac
     done
+
+    printf '%s\n' "$all_versions"
+}
+
+get_latest_version() {
+    local package_id="$1"
+    local all_versions
+
+    # `|| exit`: callers run this inside $(...), where bash does not inherit errexit, so a lookup
+    # failure (die) must end this subshell exactly as it did before the split.
+    all_versions="$(published_versions "$package_id")" || exit $?
 
     printf '%s\n' "$all_versions" |
         grep -E '^[0-9]+[.][0-9]+[.][0-9]+' |
@@ -449,6 +487,204 @@ push_package() {
     fi
 }
 
+# ---------------------------------------------------------------------------------------------
+# VERSION_SOURCE=csproj
+# ---------------------------------------------------------------------------------------------
+
+# True when the project states its own version: <Version>, <PackageVersion> or <VersionPrefix>
+# in the csproj itself or in a Directory.Build.props between it and the repository root. Without
+# one, MSBuild silently answers 1.0.0 - a placeholder, never a release.
+declares_version() {
+    local csproj_file="$1"
+    local dir
+    local candidates=("$csproj_file")
+
+    dir="$(dirname "$csproj_file")"
+    while :; do
+        [ -f "$dir/Directory.Build.props" ] && candidates+=("$dir/Directory.Build.props")
+        [ "$dir" = "." ] || [ "$dir" = "/" ] && break
+        dir="$(dirname "$dir")"
+    done
+
+    grep -Eq '<(Version|PackageVersion|VersionPrefix)>[^<]+</(Version|PackageVersion|VersionPrefix)>' \
+        "${candidates[@]}"
+}
+
+# The version `dotnet pack` would stamp on this project with no -p:Version.
+declared_package_version() {
+    local csproj_file="$1"
+
+    dotnet msbuild "$csproj_file" -nologo -getProperty:PackageVersion -p:Configuration="$CONFIGURATION" |
+        tail -n 1 |
+        tr -d '[:space:]'
+}
+
+is_release_version() {
+    [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+}
+
+# 0 when release version $1 is strictly newer than every version listed on stdin (SemVer order:
+# a prerelease X.Y.Z-tag is older than X.Y.Z; build metadata after '+' is ignored).
+is_newer_than_all() {
+    local candidate="$1"
+    local published
+    local core
+
+    while IFS= read -r published; do
+        published="${published%%+*}"
+        [ -z "$published" ] && continue
+        core="${published%%-*}"
+
+        [ "$core" = "$candidate" ] && [ "$core" = "$published" ] && return 1
+
+        if [ "$core" != "$candidate" ] &&
+           [ "$(printf '%s\n%s\n' "$core" "$candidate" | sort -V | tail -n 1)" != "$candidate" ]; then
+            return 1
+        fi
+    done
+
+    return 0
+}
+
+# Push one package. Returns 0 when the feed accepted it, 3 when the feed already had it
+# (--skip-duplicate turns that conflict into success, so it is read from the output).
+push_package_reporting() {
+    local nupkg_file="$1"
+    local output
+
+    log "Pushing $nupkg_file to $NUGET_SOURCE..."
+
+    if ! output="$(dotnet nuget push "$nupkg_file" \
+        --api-key "$NUGET_API_KEY" \
+        --source "$NUGET_SOURCE" \
+        --skip-duplicate 2>&1)"; then
+        printf '%s\n' "$output" >&2
+        die "Failed to push $nupkg_file. Verify package access and token permissions."
+    fi
+
+    printf '%s\n' "$output" >&2
+
+    # A string test, not `printf | grep -q`: under pipefail, grep -q leaving early can SIGPIPE printf.
+    if [[ "$output" == *"already exists at feed"* ]]; then
+        return 3
+    fi
+}
+
+main_csproj() {
+    local project_path
+    local package_id
+    local version
+    local versions_on_feed
+    local nupkg_file
+    local push_status
+    local leaf_projects=()
+    local meta_projects=()
+    local release_projects=()
+    local release_ids=()
+    local release_versions=()
+    local index
+
+    rm -rf "$PACKAGE_OUTPUT_DIR"
+    mkdir -p "$PACKAGE_OUTPUT_DIR" "$(dirname "$PUBLISHED_MANIFEST")"
+    : > "$PUBLISHED_MANIFEST"
+
+    for project_path in "$@"; do
+        package_id="$(read_package_id "$project_path")"
+
+        if ! declares_version "$project_path"; then
+            log "SKIP $package_id: $project_path declares no version (MSBuild's 1.0.0 default is a placeholder) - not published."
+            continue
+        fi
+
+        version="$(declared_package_version "$project_path")"
+
+        if ! is_release_version "$version"; then
+            log "SKIP $package_id $version: a prerelease or non-X.Y.Z version is never published from r2-dev-stable."
+            continue
+        fi
+
+        versions_on_feed="$(published_versions "$package_id")" || exit $?
+
+        if ! printf '%s\n' "$versions_on_feed" | is_newer_than_all "$version"; then
+            log "SKIP $package_id $version: already published / not newer than $(
+                printf '%s\n' "$versions_on_feed" | grep -E '^[0-9]' | sort -V | tail -n 1) on the feed."
+            continue
+        fi
+
+        log "PUBLISH $package_id $version (declared by $project_path; newer than everything on the feed)."
+
+        if is_meta_project "$project_path"; then
+            meta_projects+=("$project_path")
+        else
+            leaf_projects+=("$project_path")
+        fi
+    done
+
+    if [ "${#leaf_projects[@]}" -eq 0 ] && [ "${#meta_projects[@]}" -eq 0 ]; then
+        log "Nothing newer than the feed was declared; nothing to pack or publish."
+        return 0
+    fi
+
+    configure_github_packages_source
+
+    # Packed WITHOUT -p:Version: a global Version would also flow into every ProjectReference and
+    # stamp the dependency ranges, which is exactly what must come from each project's own csproj.
+    for project_path in ${leaf_projects[@]+"${leaf_projects[@]}"}; do
+        dotnet restore "$project_path" --configfile "$NUGET_CONFIG"
+    done
+
+    for project_path in ${leaf_projects[@]+"${leaf_projects[@]}"} ${meta_projects[@]+"${meta_projects[@]}"}; do
+        package_id="$(read_package_id "$project_path")"
+        version="$(declared_package_version "$project_path")"
+
+        if is_meta_project "$project_path"; then
+            dotnet restore "$project_path" \
+                --configfile "$NUGET_CONFIG" \
+                -p:RestoreAdditionalProjectSources="$PACKAGE_OUTPUT_DIR"
+        fi
+
+        log "Packing $package_id $version from $project_path at its declared version..."
+
+        dotnet pack "$project_path" \
+            --configuration "$CONFIGURATION" \
+            --no-restore \
+            -p:ContinuousIntegrationBuild=true \
+            -o "$PACKAGE_OUTPUT_DIR"
+
+        nupkg_file="$PACKAGE_OUTPUT_DIR/${package_id}.${version}.nupkg"
+        [ -f "$nupkg_file" ] ||
+            die "Expected package was not generated: $nupkg_file"
+
+        release_projects+=("$project_path")
+        release_ids+=("$package_id")
+        release_versions+=("$version")
+    done
+
+    for index in "${!release_projects[@]}"; do
+        package_id="${release_ids[$index]}"
+        version="${release_versions[$index]}"
+        nupkg_file="$PACKAGE_OUTPUT_DIR/${package_id}.${version}.nupkg"
+
+        if [ "$PUSH_PACKAGES" != "true" ]; then
+            log "PUSH_PACKAGES=false; packed but not pushing $nupkg_file."
+            continue
+        fi
+
+        push_status=0
+        push_package_reporting "$nupkg_file" || push_status=$?
+
+        if [ "$push_status" -eq 3 ]; then
+            log "$package_id $version was already on the feed (duplicate) - not recorded as published by this run."
+            continue
+        fi
+
+        printf '%s %s\n' "$package_id" "$version" >> "$PUBLISHED_MANIFEST"
+        log "Published $package_id $version."
+    done
+
+    log "Script execution completed (VERSION_SOURCE=csproj)."
+}
+
 main() {
     local selected_projects=()
     local leaf_projects=()
@@ -471,6 +707,11 @@ main() {
 
     log "Projects selected for packaging:"
     printf '  - %s\n' "${selected_projects[@]}" >&2
+
+    if [ "$VERSION_SOURCE" = "csproj" ]; then
+        main_csproj "${selected_projects[@]}"
+        return 0
+    fi
 
     for project_path in "${selected_projects[@]}"; do
         if is_meta_project "$project_path"; then
@@ -527,4 +768,8 @@ main() {
     log "Script execution completed."
 }
 
-main "$@"
+# Run only when executed. A local dry run may `source` this file, replace published_versions with
+# a stub, and call main itself (docs/README-notes.md, "Releasing").
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi
